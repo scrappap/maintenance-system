@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Maintenance Schedule</title>
+<link rel="icon" type="image/png" href="img/JKB logo.png">
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif;margin:0;padding:20px;background:#eef2f7;color:#2c3e50}
+.card{background:#fff;border-radius:16px;box-shadow:0 10px 25px rgba(0,0,0,.08);border:1px solid #e3e8f0}
+.headerBar{background:#fff;border-radius:16px;padding:12px 16px;box-shadow:0 10px 25px rgba(0,0,0,.06);margin-bottom:12px}
+.title{font-size:18px;font-weight:600}
+.subtle{font-size:11px;color:#7b8794}
+.btn{border:none;border-radius:8px;padding:7px 12px;font-size:12px;cursor:pointer}
+.btn-primary{background:#2d6cdf;color:#fff}
+.btn-danger{background:#e74c3c;color:#fff}
+.btn-gray{background:#6c757d;color:#fff}
+.btn-green{background:#27ae60;color:#fff}
+.btn-yellow{background:#f0ad2c}
+.btn:hover{opacity:.9}
+#calendar{margin:12px 0}
+.day b{display:block;margin-bottom:3px}
+.day:hover{background:#f4f7ff}
+.kpiWrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0}
+.kpi{padding:10px;border-radius:12px;background:#fff;border:1px solid #e3e8f0;box-shadow:0 6px 16px rgba(0,0,0,.06)}
+.kpi h4{margin:0;font-size:11px;color:#7b8794;font-weight:600}
+.kpi div{font-size:18px;font-weight:700;margin-top:4px}
+.compact th,.compact td{padding:4px 6px;font-size:11px}
+.disc-mechanical{background:#e8f4ff}
+.disc-electrical{background:#f3e8ff}
+table{border-collapse:separate;border-spacing:0;width:100%;background:#fff;border-radius:12px;overflow:hidden}
+th,td{border-bottom:1px solid #e6e9ef;padding:8px 10px;font-size:12px}
+th{background:#2d6cdf;color:#fff;position:sticky;top:0;text-transform:uppercase;font-size:11px;letter-spacing:.5px}
+tbody tr:hover{background:#f7faff}
+.hasRemark{background:#d4edda}
+.remarkIcon{margin-left:4px;color:#27ae60;font-weight:bold}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.day{border:1px solid #ddd;padding:4px;border-radius:6px;cursor:pointer;font-size:11px}
+#loadingOverlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:1000}
+.loader{width:70px;height:70px;background:url('img/JKB logo.png') center/contain no-repeat;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginPage" style="min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;background:url('img/background.png') center/cover no-repeat;padding-bottom:60px">
+  <div id="loadingOverlay"><div class="loader"></div></div>
+  <div style="width:320px">
+    <h2>Log in</h2>
+    <input id="loginUser" placeholder="Username" style="width:100%;padding:10px;margin-bottom:10px">
+    <input id="loginPass" type="password" placeholder="Password" style="width:100%;padding:10px;margin-bottom:10px">
+    <button onclick="login()" style="background:#f0ad2c;border:none;padding:10px 20px">LOG IN</button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="homePage" style="display:none;padding:40px">
+  <h2 style="margin-top:0">Dashboard</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-top:20px">
+    <div onclick="openSystem('edgenta')" style="cursor:pointer;background:white;border-radius:16px;padding:20px;box-shadow:0 8px 18px rgba(0,0,0,.1);text-align:center">
+      <img src="img/UEM.jpg" style="height:70px;object-fit:contain">
+      <div style="margin-top:10px;font-weight:600">Asset by Edgenta</div>
+    </div>
+    <div onclick="openSystem('jkb')" style="cursor:pointer;background:white;border-radius:16px;padding:20px;box-shadow:0 8px 18px rgba(0,0,0,.1);text-align:center">
+      <img src="img/JKB logo.png" style="height:70px;object-fit:contain">
+      <div style="margin-top:10px;font-weight:600">Asset by JKB</div>
+    </div>
+  </div>
+</div>
+
+<!-- SYSTEM -->
+<div id="mainSystem" style="display:none">
+<div class="headerBar" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+  <div>
+    <div class="title">Asset Maintenance Schedule</div>
+    <div class="subtle">Preventive Maintenance Planning</div>
+  </div>
+  <div>
+    <button onclick="prevMonth()">◀</button>
+    <span id="monthLabel" style="margin:0 8px;font-weight:600"></span>
+    <button onclick="nextMonth()">▶</button>
+  </div>
+  <button onclick="toggleBubble()" style="border-radius:20px;padding:6px 12px">☰ Menu</button>
+</div>
+
+<!-- KPI -->
+<div class="kpiWrap">
+  <div class="kpi"><h4>TOTAL</h4><div id="kpiTotal">0</div></div>
+  <div class="kpi"><h4>DONE</h4><div id="kpiDone">0</div></div>
+  <div class="kpi"><h4>PENDING</h4><div id="kpiPending">0</div></div>
+  <div class="kpi"><h4>THIS MONTH</h4><div id="kpiMonth">0</div></div>
+</div>
+
+<!-- BUBBLE -->
+<div id="bubbleMenu" style="display:none;position:fixed;right:20px;top:120px;background:white;border-radius:12px;box-shadow:0 10px 20px rgba(0,0,0,.15);padding:10px;z-index:999">
+  <div><button onclick="goDashboard()">🏠 Dashboard</button></div>
+  <div><button onclick="openSystem('edgenta')">UEM Edgenta</button></div>
+  <div><button onclick="openSystem('jkb')">JKB</button></div>
+</div>
+
+<div class="card" style="margin:10px 0;padding:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+  <button class="btn btn-primary" onclick="addRow()">Add</button>
+  <button class="btn btn-danger" onclick="deleteSelected()">Delete</button>
+  <button class="btn btn-gray" onclick="toggleSelectAll()">Select</button>
+  <input type="file" id="excelFile" accept=".xlsx,.xls" style="display:none" onchange="importExcel(event)">
+  <button class="btn btn-green" onclick="triggerImport()">Import</button>
+  <button class="btn btn-gray" onclick="resetFilter()">Show All</button>
+  <button class="btn btn-yellow" onclick="toggleCompact()">Compact</button>
+</div>
+
+<div class="card" style="padding:12px">
+  <div style="font-size:13px;font-weight:600;margin-bottom:6px">Monthly Schedule</div>
+  <div id="calendar"></div>
+</div>
+
+<div class="card" style="max-height:420px;overflow:auto;margin-top:10px">
+<table id="assetTable">
+<thead>
+<tr>
+<th style="width:30px"><input type="checkbox" id="checkAll" onclick="toggleSelectAll(this.checked)"></th>
+<th>ASSET NO</th>
+<th>TYPE CODE</th>
+<th>ASSET DESCRIPTION</th>
+<th>DISCIPLINE</th>
+<th>LOCATION</th>
+<th>CODE LOCATION</th>
+<th>FREQUENCY</th>
+<th>TARGET DATE</th>
+<th>REMARK</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+</div>
+
+<script>
+const STORAGE_KEY='assetTableData';
+let currentRole='user';
+let viewDate=new Date();
+
+// ===== IMPORTANT =====
+// define login EARLY so button always finds it
+const LOGIN_API='https://script.google.com/macros/s/AKfycbwd1m0fzsqRdlAkugSqDRUAoIk9yRXf_8hE_VLV3rXDz4PfuR9dHy57gXbUq3ygGMy/exec';
+
+async function login(){
+  const loading=document.getElementById('loadingOverlay');
+  if(loading) loading.style.display='flex';
+
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value.trim();
+
+  try{
+    const url=`${LOGIN_API}?username=${encodeURIComponent(u)}&password=${encodeURIComponent(p)}`;
+    const res=await fetch(url);
+    const data=await res.json();
+
+    if(loading) loading.style.display='none';
+
+    if(data.ok){
+      currentRole=data.role||'user';
+      document.getElementById('loginPage').style.display='none';
+      document.getElementById('homePage').style.display='block';
+    }else alert('Invalid login');
+  }catch(e){
+    if(loading) loading.style.display='none';
+    alert('Server error');
+  }
+}
+
+// ===== NAVIGATION =====
+function goDashboard(){
+  document.getElementById('mainSystem').style.display='none';
+  document.getElementById('homePage').style.display='block';
+}
+
+function toggleBubble(){
+  const b=document.getElementById('bubbleMenu');
+  b.style.display=b.style.display==='none'?'block':'none';
+}
+
+function openSystem(){
+  document.getElementById('homePage').style.display='none';
+  document.getElementById('mainSystem').style.display='block';
+  loadTable();
+  renderCalendar();
+  updateKPI();
+}
+
+// ===== TABLE =====
+function addRow(){
+  if(currentRole!=='admin') return alert('Admin only');
+  const tr=document.querySelector('#assetTable tbody').insertRow();
+  const cbCell=tr.insertCell();
+  const cb=document.createElement('input');
+  cb.type='checkbox';
+  cb.className='rowCheck';
+  cbCell.appendChild(cb);
+  for(let i=0;i<9;i++){
+    const td=tr.insertCell();
+    td.contentEditable=true;
+  }
+  saveTable();
+}
+
+function saveTable(){
+  const rows=[...document.querySelectorAll('#assetTable tbody tr')]
+    .map(r=>[...r.querySelectorAll('td')].slice(1).map(c=>c.innerText.replace('✔','').trim()));
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(rows));
+}
+
+function loadTable(){
+  const tbody=document.querySelector('#assetTable tbody');
+  tbody.innerHTML='';
+  const data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+
+  data.forEach(r=>{
+    const tr=tbody.insertRow();
+    const cbCell=tr.insertCell();
+    const cb=document.createElement('input');
+    cb.type='checkbox';
+    cb.className='rowCheck';
+    cbCell.appendChild(cb);
+
+    for(let i=0;i<9;i++){
+      const td=tr.insertCell();
+      td.contentEditable=currentRole==='admin';
+      td.textContent=r[i]||'';
+    }
+
+    if(r[8]){
+      tr.classList.add('hasRemark');
+      const icon=document.createElement('span');
+      icon.className='remarkIcon';
+      icon.textContent='✔';
+      tr.children[9].appendChild(icon);
+    }
+  });
+}
+
+// ===== CALENDAR =====
+function renderCalendar(){
+  const label=document.getElementById('monthLabel');
+  if(label) label.textContent=viewDate.toLocaleString('default',{month:'long',year:'numeric'});
+  const y=viewDate.getFullYear();
+  const m=viewDate.getMonth();
+  const last=new Date(y,m+1,0);
+
+  const map={};
+
+  document.querySelectorAll('#assetTable tbody tr').forEach(r=>{
+    const a=r.children[1].innerText.trim();
+    const t=r.children[8].innerText.trim();
+    const d=new Date(t);
+    if(a && !isNaN(d)){
+      const k=d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate();
+      if(!map[k]) map[k]=[];
+      map[k].push(a);
+    }
+  });
+
+  let html='<div class="cal-grid">';
+  for(let d=1;d<=last.getDate();d++){
+    const key=y+'-'+m+'-'+d;
+    const list=map[key]||[];
+    let txt=list.slice(0,10).join(', ');
+    if(list.length>10) txt+=` (+${list.length-10})`;
+    html+=`<div class="day"><b>${d}</b><div>${txt}</div></div>`;
+  }
+  html+='</div>';
+
+  document.getElementById('calendar').innerHTML=html;
+}
+
+// ===== KPI =====
+function updateKPI(){
+  const rows=[...document.querySelectorAll('#assetTable tbody tr')];
+  const total=rows.length;
+  let done=0;
+  rows.forEach(r=>{
+    const remark=r.children[9]?.innerText.replace('✔','').trim();
+    if(remark) done++;
+  });
+  document.getElementById('kpiTotal').textContent=total;
+  document.getElementById('kpiDone').textContent=done;
+  document.getElementById('kpiPending').textContent=total-done;
+  document.getElementById('kpiMonth').textContent=total;
+}
+
+// ===== SELECT =====
+function toggleSelectAll(flag){
+  const boxes=document.querySelectorAll('.rowCheck');
+  if(typeof flag==='boolean') boxes.forEach(b=>b.checked=flag);
+  else boxes.forEach(b=>b.checked=!b.checked);
+}
+
+function deleteSelected(){
+  if(currentRole!=='admin') return alert('Admin only');
+  document.querySelectorAll('.rowCheck:checked').forEach(cb=>cb.closest('tr').remove());
+  saveTable();
+  renderCalendar();
+  updateKPI();
+}
+
+function resetFilter(){
+  document.querySelectorAll('#assetTable tbody tr').forEach(r=>r.style.display='');
+}
+
+function toggleCompact(){
+  document.getElementById('assetTable').classList.toggle('compact');
+}
+
+// ===== IMPORT =====
+function triggerImport(){
+  if(currentRole!=='admin') return alert('Admin only');
+  document.getElementById('excelFile').click();
+}
+
+function importExcel(e){
+  if(currentRole!=='admin') return;
+  const file=e.target.files[0];
+  if(!file) return;
+
+  const reader=new FileReader();
+  reader.onload=function(evt){
+    const data=new Uint8Array(evt.target.result);
+    const wb=XLSX.read(data,{type:'array'});
+    const sheet=wb.Sheets[wb.SheetNames[0]];
+    const json=XLSX.utils.sheet_to_json(sheet,{header:1});
+
+    const tbody=document.querySelector('#assetTable tbody');
+
+    json.slice(1).forEach(r=>{
+      const tr=tbody.insertRow();
+      const cbCell=tr.insertCell();
+      const cb=document.createElement('input');
+      cb.type='checkbox';
+      cb.className='rowCheck';
+      cbCell.appendChild(cb);
+
+      for(let i=0;i<9;i++){
+        const td=tr.insertCell();
+        td.contentEditable=true;
+        td.textContent=r[i]||'';
+      }
+    });
+
+    saveTable();
+    renderCalendar();
+    updateKPI();
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function prevMonth(){ viewDate.setMonth(viewDate.getMonth()-1); renderCalendar(); }
+function nextMonth(){ viewDate.setMonth(viewDate.getMonth()+1); renderCalendar(); }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</body>
+</html>
