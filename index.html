@@ -75,17 +75,17 @@
   <div id="kpiCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:15px 0"></div>
 
   <!-- BY DEPARTMENT -->
-  <h3>Ringkasan Mengikut Department</h3>
+  <h3>Summary By Department</h3>
   <div id="homeStats" style="display:flex;gap:15px;flex-wrap:wrap"></div>
 
-  <button onclick="openSystem()">Masuk Sistem</button>
+  <button onclick="openSystem()">Maintenance</button>
   <button onclick="logout()" style="background:#7f8c8d">Logout</button>
   <hr style="margin:20px 0">
 </div>
 
 <div id="mainSystem" style="display:none">
 
-<h2>Jadual Penyelenggaraan Aset</h2>
+<h2>Schedule Preventive Maintenance</h2>
 
 <div class="controls">
   <input type="text" id="searchBox" placeholder="Search apa saja...">
@@ -118,7 +118,7 @@
   <tbody></tbody>
 </table>
 
-<button onclick="addRow()">+ Tambah Baris</button>
+<button onclick="addRow()">+ Add Row</button>
 <input type="file" id="excelFile" accept=".xlsx,.xls" />
 <button onclick="importExcel()">Import Excel</button>
 <button onclick="exportJSON()">Export JSON</button>
@@ -242,7 +242,7 @@ function deleteSelected(){
 ============================== */
 function importExcel(){
   const file=document.getElementById("excelFile").files[0];
-  if(!file){alert("Sila pilih fail Excel dahulu");return;}
+  if(!file){alert("Please insert file");return;}
 
   const reader=new FileReader();
   reader.onload=function(e){
@@ -328,8 +328,7 @@ function openSystem(){
    LOGIN SYSTEM
 ============================== */
 const USERS=[
-  {u:"admin",p:"1234",role:"admin"},
-  {u:"user",p:"1234",role:"user"},
+
   {u:"pjm",p:"2290",role:"admin"}
 ];
 
