@@ -337,7 +337,7 @@ function login(){
   const p=document.getElementById('password').value.trim();
   const found=USERS.find(x=>x.u===u && x.p===p);
   if(!found){
-    document.getElementById('loginMsg').textContent="Login gagal";
+    document.getElementById('loginMsg').textContent="Login Failed";
     return;
   }
   localStorage.setItem('loggedUser',JSON.stringify(found));
