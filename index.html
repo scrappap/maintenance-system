@@ -171,6 +171,16 @@ function initYear(){
   sel.innerHTML='';
   const now=new Date().getFullYear();
   for(let y=now-3;y<=now+3;y++){
+  const data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+  const dataYears=data
+    .map(r=>parseDateSafe(r[7]))
+    .filter(Boolean)
+    .map(d=>d.getFullYear());
+
+  const minYear=Math.min(now-3,selectedYear,...dataYears);
+  const maxYear=Math.max(now+3,selectedYear,...dataYears);
+
+  for(let y=minYear;y<=maxYear;y++){
     const opt=document.createElement('option');
     opt.value=y; opt.textContent=y;
     if(y===selectedYear) opt.selected=true;
@@ -196,15 +206,6 @@ function addRow(){
       td.addEventListener('input',()=>{
         applyRemarkStyle(tr,td);
         saveTable();
-      });
-    }
-  }
-}
-
-function saveTable(){
-  const rows=[...document.querySelectorAll('#assetTable tbody tr')]
-    .map(r=>[...r.querySelectorAll('td')].slice(1).map(c=>c.innerText.trim()));
-  localStorage.setItem(STORAGE_KEY,JSON.stringify(rows));
 }
 
 function parseDateSafe(value){
@@ -472,6 +473,115 @@ function exportExcel(){
   XLSX.utils.book_append_sheet(wb,ws,'Maintenance');
   XLSX.writeFile(wb,'Maintenance_Data.xlsx');
 }
+      function showToast(msg){
+  const t=document.getElementById('toast');
+  t.innerText=msg;
+  t.style.display='block';
+  setTimeout(()=>t.style.display='none',3000);
+}
+
+function triggerImport(){
+  if(currentRole!=='admin') return showToast('Admin only');
+  document.getElementById('excelFile').click();
+}
+
+function exportExcel(){
+  const rows=[...document.querySelectorAll('#assetTable tbody tr')]
+    .map(r=>[...r.querySelectorAll('td')].slice(1).map(c=>c.innerText.trim()));
+  if(!rows.length) return showToast('No data to export');
+  const ws=XLSX.utils.aoa_to_sheet([
+    ['ASSET NO','TYPE CODE','ASSET DESCRIPTION','DISCIPLINE','CODE LOCATION','LOCATION','FREQUENCY','TARGET DATE','REMARK'],
+    ...rows
+  ]);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Maintenance');
+  XLSX.writeFile(wb,'Maintenance_Data.xlsx');
+}
+
+function pickMostCommonYear(rows){
+  const counts={};
+  rows.forEach(row=>{
+    const parsed=parseDateSafe(row[7]);
+    if(!parsed) return;
+    const year=parsed.getFullYear();
+    counts[year]=(counts[year]||0)+1;
+  });
+
+  const entries=Object.entries(counts);
+  if(!entries.length) return null;
+  entries.sort((a,b)=>b[1]-a[1]);
+  return Number(entries[0][0]);
+}
+
+function normalizeImportedRow(r){
+  return [
+    String(r[0]??'').trim(),
+    String(r[1]??'').trim(),
+    String(r[2]??'').trim(),
+    String(r[3]??'').trim(),
+    String(r[4]??'').trim(),
+    String(r[5]??'').trim(),
+    String(r[6]??'').trim(),
+    formatDateDisplay(parseDateSafe(r[7])) || String(r[7]??'').trim(),
+    String(r[8]??'').trim()
+  ];
+}
+
+document.getElementById('excelFile').addEventListener('change',(event)=>{
+  const file=event.target.files?.[0];
+  if(!file) return;
+
+  const reader=new FileReader();
+  reader.onload=(e)=>{
+    try{
+      const data=new Uint8Array(e.target.result);
+      const wb=XLSX.read(data,{type:'array'});
+      const firstSheet=wb.SheetNames[0];
+      const ws=wb.Sheets[firstSheet];
+      const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+
+      const nonEmptyRows=rows
+        .filter(r=>r.some(cell=>String(cell).trim()));
+
+      const firstRowText=nonEmptyRows[0]
+        ? nonEmptyRows[0].map(c=>String(c).trim().toUpperCase()).join('|')
+        : '';
+      const hasHeader=firstRowText.includes('ASSET') && firstRowText.includes('DATE');
+      const bodyRows=hasHeader ? nonEmptyRows.slice(1) : nonEmptyRows;
+
+      if(!bodyRows.length){
+        showToast('Import failed: no data found');
+        return;
+      }
+
+      const importedRows=bodyRows.map(normalizeImportedRow);
+      localStorage.setItem(STORAGE_KEY,JSON.stringify(importedRows));
+
+      const importedYear=pickMostCommonYear(importedRows);
+      if(importedYear){
+        selectedYear=importedYear;
+      }
+
+      initYear();
+      loadTable();
+      renderCalendar();
+      updateKPI();
+
+      const visibleRows=document.querySelectorAll('#assetTable tbody tr').length;
+      if(!visibleRows && importedRows.length){
+        showToast('Import done. Tukar year untuk lihat data');
+      }else{
+        showToast('Import success');
+      }
+    }catch(error){
+      showToast('Import failed: invalid file format');
+    }finally{
+      event.target.value='';
+    }
+  };
+
+  reader.readAsArrayBuffer(file);
+});
 </script>
 
 </body>
