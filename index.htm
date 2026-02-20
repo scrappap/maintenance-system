@@ -636,7 +636,7 @@ function exportExcel(){
   const data=JSON.parse(localStorage.getItem(getStorageKey())||'[]');
 
   if(data.length===0){
-    showToast('Tiada data untuk export');
+    showToast('No data');
     return;
   }
 
@@ -652,7 +652,7 @@ function exportExcel(){
 
   XLSX.writeFile(wb,'Maintenance_Schedule.xlsx');
 
-  showToast('Export berjaya');
+  showToast('Export succesfull');
 }
 /*=========================================
 LOGIN
@@ -669,7 +669,7 @@ function login(){
   const error=document.getElementById('loginError');
 
   if(!USERS[user] || USERS[user].password !== pass){
-    error.innerText="Username atau password salah";
+    error.innerText="Username or password incorrect";
     return;
   }
 
@@ -751,4 +751,5 @@ function showToast(message){
 
 </body>
 </html>
+
 
