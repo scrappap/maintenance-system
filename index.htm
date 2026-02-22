@@ -925,20 +925,10 @@ function handleImport(e){
         return;
       }
 
-      // normalize header
-      const headers = rows[0].map(h => h.toString().trim().toUpperCase());
+      // buang header row
+      importPreviewData = rows.slice(1);
 
-      const jsonData = rows.slice(1).map(r=>{
-        let obj = {};
-        headers.forEach((h,i)=>{
-          obj[h] = r[i];
-        });
-        return obj;
-      });
-
-      importPreviewData = jsonData;
-
-      renderImportPreview(jsonData);
+      renderImportPreview(importPreviewData);
 
       document.getElementById("importPreviewModal").style.display="flex";
 
@@ -952,7 +942,6 @@ function handleImport(e){
   reader.readAsArrayBuffer(file);
   e.target.value='';
 }
-
 
 function renderImportPreview(data){
 
@@ -974,16 +963,15 @@ function renderImportPreview(data){
 
     table.innerHTML += `
       <tr style="border-bottom:1px solid #1e2b36">
-        <td>${row["ASSET NO"]||''}</td>
-        <td>${row["TYPE CODE"]||''}</td>
-        <td>${row["ASSET DESCRIPTION"]||''}</td>
-        <td>${row["DISCIPLINE"]||''}</td>
-        <td>${row["LOCATION"]||''}</td>
-        <td>${row["START DATE"]||''}</td>
+        <td>${row[0]||''}</td>
+        <td>${row[1]||''}</td>
+        <td>${row[2]||''}</td>
+        <td>${row[3]||''}</td>
+        <td>${row[5]||''}</td>
+        <td>${row[7]||''}</td>
       </tr>
     `;
   });
-
 }
 
   function confirmImport(){
@@ -1001,15 +989,15 @@ function renderImportPreview(data){
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
           action:"create",
-          assetNo:row["ASSET NO"] || "",
-          typeCode:row["TYPE CODE"] || "",
-          description:row["ASSET DESCRIPTION"] || "",
-          discipline:row["DISCIPLINE"] || "",
-          codeLocation:row["CODE LOCATION"] || "",
-          location:row["LOCATION"] || "",
-          frequency:row["FREQUENCY"] || "",
-          startDate:row["START DATE"] || "",
-          remark:row["REMARK"] || ""
+          assetNo:row[0] || "",
+          typeCode:row[1] || "",
+          description:row[2] || "",
+          discipline:row[3] || "",
+          codeLocation:row[4] || "",
+          location:row[5] || "",
+          frequency:row[6] || "",
+          startDate:row[7] || "",
+          remark:row[9] || ""
         })
       });
 
@@ -1170,5 +1158,6 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
