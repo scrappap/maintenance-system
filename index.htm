@@ -902,6 +902,7 @@ function applyRemarkStyle(row,cell){
 function handleImport(e){
 
   const file = e.target.files[0];
+
   if(!file){
     showToast("Tiada file dipilih");
     return;
@@ -916,19 +917,34 @@ function handleImport(e){
       const data = new Uint8Array(evt.target.result);
       const workbook = XLSX.read(data,{type:'array'});
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      const json = XLSX.utils.sheet_to_json(worksheet);
 
-      if(json.length === 0){
+      // 🔥 GUNA header:1 supaya ambil semua termasuk tanpa header
+      const rows = XLSX.utils.sheet_to_json(worksheet,{header:1});
+
+      if(rows.length <= 1){
         showToast("File kosong atau format salah");
         return;
       }
 
-      importPreviewData = json;
+      // ambil header dari row pertama
+      const headers = rows[0];
 
-      renderImportPreview(json);
+      const jsonData = rows.slice(1).map(r=>{
+        let obj = {};
+        headers.forEach((h,i)=>{
+          obj[h] = r[i];
+        });
+        return obj;
+      });
+
+      importPreviewData = jsonData;
+
+      renderImportPreview(jsonData);
+
       document.getElementById("importPreviewModal").style.display="flex";
 
     }catch(err){
+      console.error(err);
       showToast("Format file tidak sah");
     }
 
@@ -1167,3 +1183,4 @@ function showToast(message){
 
 </body>
 </html>
+
