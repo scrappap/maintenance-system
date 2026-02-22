@@ -985,27 +985,24 @@ function renderImportPreview(data){
   Promise.all(
     importPreviewData.map(row=>{
 
-      return fetch(SHEET_API_URL,{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-          action:"create",
-          assetNo:row[0] || "",
-          typeCode:row[1] || "",
-          description:row[2] || "",
-          discipline:row[3] || "",
-          codeLocation:row[4] || "",
-          location:row[5] || "",
-          frequency:row[6] || "",
-          startDate:row[7] || "",
-          remark:row[9] || ""
-        })
+      const params = new URLSearchParams({
+        assetNo: row["ASSET NO"] || "",
+        typeCode: row["TYPE CODE"] || "",
+        description: row["ASSET DESCRIPTION"] || "",
+        discipline: row["DISCIPLINE"] || "",
+        codeLocation: row["CODE LOCATION"] || "",
+        location: row["LOCATION"] || "",
+        frequency: row["FREQUENCY"] || "",
+        startDate: row["START DATE"] || "",
+        durationYears: row["DURATION YEARS"] || "",
+        remark: row["REMARK"] || ""
       });
 
+      return fetch(SHEET_API_URL + "?" + params.toString());
     })
   )
   .then(()=>{
-    showToast("Import berjaya: "+importPreviewData.length+" rekod");
+    showToast("Import berjaya");
     closeImportPreview();
     loadFromGoogleSheet();
   })
@@ -1159,6 +1156,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
