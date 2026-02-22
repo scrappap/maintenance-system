@@ -918,7 +918,6 @@ function handleImport(e){
       const workbook = XLSX.read(data,{type:'array'});
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
 
-      // 🔥 GUNA header:1 supaya ambil semua termasuk tanpa header
       const rows = XLSX.utils.sheet_to_json(worksheet,{header:1});
 
       if(rows.length <= 1){
@@ -926,8 +925,8 @@ function handleImport(e){
         return;
       }
 
-      // ambil header dari row pertama
-      const headers = rows[0];
+      // normalize header
+      const headers = rows[0].map(h => h.toString().trim().toUpperCase());
 
       const jsonData = rows.slice(1).map(r=>{
         let obj = {};
@@ -960,50 +959,6 @@ function renderImportPreview(data){
   const table = document.getElementById("previewTable");
   table.innerHTML = "";
 
-  const headerRow = `
-    <tr style="background:#081018;color:#00e5ff">
-      <th>ASSET NO</th>
-      <th>TYPE CODE</th>
-      <th>DESCRIPTION</th>
-      <th>DISCIPLINE</th>
-      <th>LOCATION</th>
-      <th>DATE</th>
-    </tr>
-  `;
-
-  table.innerHTML += headerRow;
-
-  data.slice(0,20).forEach(row=>{
-
-    table.innerHTML += `
-      <tr style="border-bottom:1px solid #1e2b36">
-        <td>${row["ASSET NO"]||''}</td>
-        <td>${row["TYPE CODE"]||''}</td>
-        <td>${row["ASSET DESCRIPTION"]||''}</td>
-        <td>${row["DISCIPLINE"]||''}</td>
-        <td>${row["LOCATION"]||''}</td>
-        <td>${row["TARGET DATE"]||''}</td>
-      </tr>
-    `;
-  });
-
-  if(data.length > 20){
-    table.innerHTML += `
-      <tr>
-        <td colspan="6" style="text-align:center;color:#ffaa00">
-          Showing first 20 rows only...
-        </td>
-      </tr>
-    `;
-  }
-}
-
-
-function renderImportPreview(data){
-
-  const table = document.getElementById("previewTable");
-  table.innerHTML = "";
-
   table.innerHTML += `
     <tr style="background:#081018;color:#00e5ff">
       <th>ASSET NO</th>
@@ -1028,8 +983,48 @@ function renderImportPreview(data){
       </tr>
     `;
   });
+
 }
 
+  function confirmImport(){
+
+  if(importPreviewData.length === 0){
+    showToast("Tiada data untuk import");
+    return;
+  }
+
+  Promise.all(
+    importPreviewData.map(row=>{
+
+      return fetch(SHEET_API_URL,{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          action:"create",
+          assetNo:row["ASSET NO"] || "",
+          typeCode:row["TYPE CODE"] || "",
+          description:row["ASSET DESCRIPTION"] || "",
+          discipline:row["DISCIPLINE"] || "",
+          codeLocation:row["CODE LOCATION"] || "",
+          location:row["LOCATION"] || "",
+          frequency:row["FREQUENCY"] || "",
+          startDate:row["START DATE"] || "",
+          remark:row["REMARK"] || ""
+        })
+      });
+
+    })
+  )
+  .then(()=>{
+    showToast("Import berjaya: "+importPreviewData.length+" rekod");
+    closeImportPreview();
+    loadFromGoogleSheet();
+  })
+  .catch(()=>{
+    showToast("Import gagal");
+  });
+}
+  
 function closeImportPreview(){
   document.getElementById("importPreviewModal").style.display="none";
   importPreviewData = [];
@@ -1175,5 +1170,6 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
