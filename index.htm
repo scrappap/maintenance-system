@@ -980,7 +980,7 @@ async function confirmImport(){
     return;
   }
 
-  const chunkSize = 100;
+  const chunkSize = 25;
   let index = 0;
 
   while(index < importPreviewData.length){
@@ -1011,7 +1011,8 @@ async function confirmImport(){
     index += chunkSize;
 
     showToast("Imported " + index + " / " + importPreviewData.length);
-    await new Promise(r => setTimeout(r, 300));
+
+    await new Promise(r => setTimeout(r, 1000));
   }
 
   showToast("Import selesai");
@@ -1172,6 +1173,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
