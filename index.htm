@@ -272,15 +272,16 @@ let importPreviewData = [];
 
 let globalAssets = [];
 
-  function sendToSheet(params){
-  return fetch(SHEET_API_URL + "?" + new URLSearchParams(params));
-}
+
 /*================================
    API
    =============================*/
    
    const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbx8IvUUYNyEfgG2_ai3mBOSGXhR6modtJhIiHphuT6M_c4GPXgzCbrozPRHHjmnyQ6eWg/exec";
-   
+
+  function sendToSheet(params){
+  return fetch(SHEET_API_URL + "?" + new URLSearchParams(params));
+}
 /* ===============================
    INIT
 ================================ */
@@ -1149,6 +1150,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
