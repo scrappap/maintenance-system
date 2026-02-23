@@ -279,8 +279,11 @@ let globalAssets = [];
    
    const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwAJl-cEwnDnQpeSQAruRe4eeaH-BO9PTfTW2q-JZ5sXIF7p2m0usnj2IPoBdktdf7B4A/exec";
 
-  function sendToSheet(params){
-  return fetch(SHEET_API_URL + "?" + new URLSearchParams(params));
+function sendToSheet(params){
+  return fetch(SHEET_API_URL, {
+    method: "POST",
+    body: new URLSearchParams(params)
+  });
 }
 /* ===============================
    INIT
@@ -1150,6 +1153,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
