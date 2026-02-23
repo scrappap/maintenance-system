@@ -271,6 +271,10 @@ let generationLocked = false;
 let importPreviewData = [];
 
 let globalAssets = [];
+
+  function sendToSheet(params){
+  return fetch(SHEET_API_URL + "?" + new URLSearchParams(params));
+}
 /*================================
    API
    =============================*/
@@ -351,21 +355,14 @@ function loadFromGoogleSheet(){
       remarkCell.contentEditable = true;
       remarkCell.innerText = asset.remark || '';
 
-      remarkCell.addEventListener('blur',()=>{
+remarkCell.addEventListener('blur',()=>{
 
-        fetch(SHEET_API_URL,{
-          method:"POST",
-          headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({
-            action:"update",
-            id:asset.id,
-            remark:remarkCell.innerText
-          })
-        });
+  sendToSheet({
+    action:"update",
+    id:asset.id,
+    remark:remarkCell.innerText
+  });
 
-      });
-
-    });
 
     renderCalendar();
     updateKPI();
@@ -424,23 +421,19 @@ generationLocked = true;
     let newDate = new Date(asset.startDate);
     newDate.setFullYear(nextYear);
 
-    fetch(SHEET_API_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        action:"create",
-        assetNo:asset.assetNo,
-        typeCode:asset.typeCode,
-        description:asset.description,
-        discipline:asset.discipline,
-        codeLocation:asset.codeLocation,
-        location:asset.location,
-        frequency:asset.frequency,
-        startDate:newDate.toLocaleDateString(),
-        remark:""
-      })
-    });
-
+sendToSheet({
+  action:"create",
+  assetNo:asset.assetNo,
+  typeCode:asset.typeCode,
+  description:asset.description,
+  discipline:asset.discipline,
+  codeLocation:asset.codeLocation,
+  location:asset.location,
+  frequency:asset.frequency,
+  startDate:newDate.toLocaleDateString(),
+  durationYears:"5",
+  remark:""
+});
   });
 
   showToast("Schedule "+nextYear+" auto generated");
@@ -827,8 +820,6 @@ function saveTable(){
     };
 
 sendToSheet(rowData);
-      body: JSON.stringify(rowData)
-  }
 
   showToast("Data dihantar ke Google Sheet");
 }
@@ -967,7 +958,7 @@ function renderImportPreview(data){
   });
 }
 
-  function confirmImport(){
+function confirmImport(){
 
   if(importPreviewData.length === 0){
     showToast("Tiada data untuk import");
@@ -977,20 +968,20 @@ function renderImportPreview(data){
   Promise.all(
     importPreviewData.map(row=>{
 
-      const params = new URLSearchParams({
-        assetNo: row["ASSET NO"] || "",
-        typeCode: row["TYPE CODE"] || "",
-        description: row["ASSET DESCRIPTION"] || "",
-        discipline: row["DISCIPLINE"] || "",
-        codeLocation: row["CODE LOCATION"] || "",
-        location: row["LOCATION"] || "",
-        frequency: row["FREQUENCY"] || "",
-        startDate: row["START DATE"] || "",
-        durationYears: row["DURATION YEARS"] || "",
-        remark: row["REMARK"] || ""
+      return sendToSheet({
+        action:"create",
+        assetNo: row[0] || "",
+        typeCode: row[1] || "",
+        description: row[2] || "",
+        discipline: row[3] || "",
+        codeLocation: row[4] || "",
+        location: row[5] || "",
+        frequency: row[6] || "",
+        startDate: row[7] || "",
+        durationYears: row[8] || "",
+        remark: row[9] || ""
       });
 
-      return fetch(SHEET_API_URL + "?" + params.toString());
     })
   )
   .then(()=>{
@@ -1001,8 +992,7 @@ function renderImportPreview(data){
   .catch(()=>{
     showToast("Import gagal");
   });
-}
-  
+} 
 function closeImportPreview(){
   document.getElementById("importPreviewModal").style.display="none";
   importPreviewData = [];
@@ -1148,6 +1138,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
