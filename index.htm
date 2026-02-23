@@ -973,41 +973,52 @@ function renderImportPreview(data){
   });
 }
 
-function confirmImport(){
+async function confirmImport(){
 
   if(importPreviewData.length === 0){
     showToast("Tiada data untuk import");
     return;
   }
 
-  Promise.all(
-    importPreviewData.map(row=>{
+  const chunkSize = 100;
+  let index = 0;
 
-      return sendToSheet({
-        action:"create",
-        assetNo: row[0] || "",
-        typeCode: row[1] || "",
-        description: row[2] || "",
-        discipline: row[3] || "",
-        codeLocation: row[4] || "",
-        location: row[5] || "",
-        frequency: row[6] || "",
-        startDate: row[7] || "",
-        durationYears: row[8] || "",
-        remark: row[9] || ""
-      });
+  while(index < importPreviewData.length){
 
-    })
-  )
-  .then(()=>{
-    showToast("Import berjaya");
-    closeImportPreview();
-    loadFromGoogleSheet();
-  })
-  .catch(()=>{
-    showToast("Import gagal");
-  });
-} 
+    const chunk = importPreviewData.slice(index, index + chunkSize);
+
+    const bulkData = chunk.map(row => ({
+      assetNo: row[0] || "",
+      typeCode: row[1] || "",
+      description: row[2] || "",
+      discipline: row[3] || "",
+      codeLocation: row[4] || "",
+      location: row[5] || "",
+      frequency: row[6] || "",
+      startDate: convertExcelDate(row[7]),
+      durationYears: row[8] || "",
+      remark: row[9] || ""
+    }));
+
+    await fetch(SHEET_API_URL, {
+      method: "POST",
+      body: new URLSearchParams({
+        action: "bulkCreate",
+        data: JSON.stringify(bulkData)
+      })
+    });
+
+    index += chunkSize;
+
+    showToast("Imported " + index + " / " + importPreviewData.length);
+    await new Promise(r => setTimeout(r, 300));
+  }
+
+  showToast("Import selesai");
+  closeImportPreview();
+  loadFromGoogleSheet();
+}
+  
 function closeImportPreview(){
   document.getElementById("importPreviewModal").style.display="none";
   importPreviewData = [];
@@ -1017,6 +1028,14 @@ function triggerImport(){
   document.getElementById('excelFile').click();
 }
 
+function convertExcelDate(value){
+  if(typeof value === "number"){
+    const date = new Date((value - 25569) * 86400 * 1000);
+    return date.toLocaleDateString();
+  }
+  return value || "";
+}
+  
 /*=========================================
   EXPORT
 =========================================*/
@@ -1153,6 +1172,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
