@@ -763,8 +763,48 @@ function searchTable(){
   RESHEDULE FUNCTIONS
   ============================*/
   
-maintenance-system/:62  Uncaught ReferenceError: login is not defined
-    at HTMLButtonElement.onclick (maintenance-system/:62:72)
+function rescheduleSelected(){
+
+  if(currentRole === 'viewer'){
+    showToast('Viewer tidak dibenarkan reschedule');
+    return;
+  }
+
+  const selected=document.querySelectorAll('.rowCheck:checked');
+
+  if(selected.length===0){
+    showToast('Pilih asset dahulu');
+    return;
+  }
+
+  selected.forEach(cb=>{
+
+    const tr=cb.closest('tr');
+    const id = tr.dataset.id;
+
+    const freq=tr.children[7].innerText;
+    const dateCell=tr.children[8];
+
+    if(!dateCell.innerText) return;
+
+    const weeks=getWeeksFromFrequency(freq);
+    if(weeks===0) return;
+
+    const currentDate=new Date(dateCell.innerText);
+    currentDate.setDate(currentDate.getDate() + (weeks * 7));
+
+    sendToSheet({
+      action:"update",
+      id:id,
+      startDate: currentDate.toLocaleDateString(),
+      remark:""
+    });
+
+  });
+
+  setTimeout(loadFromGoogleSheet,500);
+  showToast('Next schedule generated');
+}
 
 /* ===============================
    SAVE / LOAD
@@ -1109,6 +1149,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
