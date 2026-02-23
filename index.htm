@@ -707,12 +707,19 @@ function addRow(){
     remark:""
   };
 
-  fetch(SHEET_API_URL,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify(data)
-  })
-  .then(()=>loadFromGoogleSheet());
+sendToSheet({
+  action:"create",
+  assetNo:assetNo,
+  typeCode:"",
+  description:"",
+  discipline:"",
+  codeLocation:"",
+  location:"",
+  frequency:"Monthly",
+  startDate:new Date().toLocaleDateString(),
+  durationYears:"5",
+  remark:""
+}).then(()=>loadFromGoogleSheet());
 }
 
 function deleteSelected(){
@@ -724,14 +731,10 @@ function deleteSelected(){
     const tr = cb.closest('tr');
     const id = tr.dataset.id;
 
-    fetch(SHEET_API_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        action:"delete",
-        id:id
-      })
-    });
+sendToSheet({
+  action:"delete",
+  id:id
+});
 
   });
 
@@ -788,19 +791,14 @@ function rescheduleSelected(){
     const currentDate=new Date(dateCell.innerText);
     currentDate.setDate(currentDate.getDate() + (weeks * 7));
 
-    fetch(SHEET_API_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        action:"update",
-        id:id,
-        startDate: currentDate.toLocaleDateString(),
-        remark:""
-      })
-    });
+sendToSheet({
+  action:"update",
+  id:id,
+  startDate: currentDate.toLocaleDateString(),
+  remark:""
+});
 
-  });
-
+  
   setTimeout(loadFromGoogleSheet,500);
   showToast('Next schedule generated');
 }
@@ -828,15 +826,9 @@ function saveTable(){
       remark: r.children[9].innerText
     };
 
-    fetch(SHEET_API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+sendToSheet(rowData);
       body: JSON.stringify(rowData)
-    });
-
-  });
+  }
 
   showToast("Data dihantar ke Google Sheet");
 }
@@ -1156,6 +1148,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
