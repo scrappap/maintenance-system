@@ -285,6 +285,17 @@ function sendToSheet(params){
     body: new URLSearchParams(params)
   });
 }
+
+function formatDate(dateString){
+
+  if(!dateString) return "";
+
+  const date = new Date(dateString);
+
+  return date.toLocaleDateString("en-GB"); 
+  // Format: DD/MM/YYYY
+}
+
 /* ===============================
    INIT
 ================================ */
@@ -355,7 +366,7 @@ function loadFromGoogleSheet(){
       tr.insertCell().innerText = asset.codeLocation;
       tr.insertCell().innerText = asset.location;
       tr.insertCell().innerText = asset.frequency;
-      tr.insertCell().innerText = asset.startDate;
+      tr.insertCell().innerText = formatDate(asset.startDate);
 
       const remarkCell = tr.insertCell();
       remarkCell.contentEditable = true;
@@ -1173,6 +1184,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
