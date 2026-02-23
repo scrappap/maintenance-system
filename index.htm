@@ -329,10 +329,12 @@ function loadFromGoogleSheet(){
   .then(data => {
 
     globalAssets = data.filter(a=>{
-  if(!a.startDate) return false;
-  return new Date(a.startDate).getFullYear() === selectedYear;
+      if(!a.startDate) return false;
+      return new Date(a.startDate).getFullYear() === selectedYear;
     });
+
     populateFilters();
+
     const tbody = document.querySelector('#assetTable tbody');
     tbody.innerHTML = '';
 
@@ -355,19 +357,26 @@ function loadFromGoogleSheet(){
       remarkCell.contentEditable = true;
       remarkCell.innerText = asset.remark || '';
 
-remarkCell.addEventListener('blur',()=>{
+      remarkCell.addEventListener('blur',()=>{
 
-  sendToSheet({
-    action:"update",
-    id:asset.id,
-    remark:remarkCell.innerText
-  });
+        sendToSheet({
+          action:"update",
+          id:asset.id,
+          remark:remarkCell.innerText
+        });
 
+      });
+
+    });
 
     renderCalendar();
     updateKPI();
     renderYearChart();
     autoGenerateNextYear();
+
+  })
+  .catch(err=>{
+    console.error("Load error:", err);
   });
 
 }
@@ -1100,6 +1109,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
