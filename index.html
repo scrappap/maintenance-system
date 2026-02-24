@@ -696,7 +696,6 @@ function renderCalendar(){
   const grid = document.createElement('div');
   grid.className = 'cal-grid';
 
-  // kosongkan ruang sebelum 1st day
   for(let i=0;i<firstDay;i++){
     grid.appendChild(document.createElement('div'));
   }
@@ -707,20 +706,13 @@ function renderCalendar(){
     day.className = 'day';
     day.innerHTML = '<b>'+dayNum+'</b>';
 
-const compareISO = new Date(year,month,dayNum)
-  .toISOString()
-  .split("T")[0];
+    const compareISO = new Date(year,month,dayNum)
+      .toISOString()
+      .split("T")[0];
 
-const compareISO = new Date(year,month,dayNum)
-  .toISOString()
-  .split("T")[0];
-
-const match = globalAssets.filter(a => 
-  a.isoDate === compareISO
-);
-
-  return assetISO === compareISO;
-});
+    const match = globalAssets.filter(a => 
+      a.isoDate === compareISO
+    );
 
     if(match.length > 0){
       day.style.background = '#003c2f';
@@ -730,7 +722,7 @@ const match = globalAssets.filter(a =>
     }
 
     day.onclick = function(){
-      filterTableByDate(compareDate);
+      filterTableByDate(compareISO);
     };
 
     grid.appendChild(day);
@@ -1401,6 +1393,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
