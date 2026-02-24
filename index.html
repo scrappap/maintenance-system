@@ -649,60 +649,53 @@ function renderYearChart(){
 ================================ */
 function renderCalendar(){
 
-  const calendar=document.getElementById('calendar');
-  calendar.innerHTML='';
+  const calendar = document.getElementById('calendar');
+  calendar.innerHTML = '';
 
-  const year=viewDate.getFullYear();
-  const month=viewDate.getMonth();
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
 
-  const firstDay=new Date(year,month,1).getDay();
-  const daysInMonth=new Date(year,month+1,0).getDate();
+  const firstDay = new Date(year,month,1).getDay();
+  const daysInMonth = new Date(year,month+1,0).getDate();
 
-  document.getElementById('monthLabel').textContent=
-    viewDate.toLocaleString('default',{month:'long',year:'numeric'});
+  document.getElementById('monthLabel').textContent =
+    viewDate.toLocaleString('en-GB',{month:'long',year:'numeric'});
 
-  const grid=document.createElement('div');
-  grid.className='cal-grid';
+  const grid = document.createElement('div');
+  grid.className = 'cal-grid';
 
+  // kosongkan ruang sebelum 1st day
   for(let i=0;i<firstDay;i++){
     grid.appendChild(document.createElement('div'));
   }
 
-  for(let dayNum=1;dayNum<=daysInMonth;dayNum++){
+  for(let dayNum=1; dayNum<=daysInMonth; dayNum++){
 
-    const day=document.createElement('div');
-    day.className='day';
-    day.innerHTML='<b>'+dayNum+'</b>';
+    const day = document.createElement('div');
+    day.className = 'day';
+    day.innerHTML = '<b>'+dayNum+'</b>';
 
-    const fullDate = toISO(new Date(year,month,dayNum));
+    const compareDate = new Date(year,month,dayNum)
+      .toLocaleDateString('en-GB');
 
-    const match=globalAssets.filter(r=>{
-      if(!r.startDate) return false;
-      return new Date(r.startDate).toLocaleDateString()===fullDate;
+    const match = globalAssets.filter(a=>{
+      if(!a.startDate) return false;
+
+      const assetDate = new Date(a.startDate)
+        .toLocaleDateString('en-GB');
+
+      return assetDate === compareDate;
     });
 
-    if(match.length>0){
-      day.style.background='#003c2f';
+    if(match.length > 0){
+      day.style.background = '#003c2f';
       day.innerHTML += 
-        '<div style="color:#00ffaa;font-size:10px">'+
-        match.length+' Asset</div>';
+        '<div style="color:#00ffaa;font-size:10px">'
+        + match.length + ' Asset</div>';
     }
 
-    if(selectedCalendarDate===fullDate){
-      day.style.outline="2px solid #ffaa00";
-    }
-
-    day.onclick=function(){
-
-      if(selectedCalendarDate===fullDate){
-        selectedCalendarDate=null;
-        resetTableFilter();
-      }else{
-        selectedCalendarDate=fullDate;
-        filterTableByDate(fullDate);
-      }
-
-      renderCalendar();
+    day.onclick = function(){
+      filterTableByDate(compareDate);
     };
 
     grid.appendChild(day);
@@ -1373,6 +1366,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
