@@ -327,6 +327,7 @@ let selectedCalendarDate = null;
    const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwAJl-cEwnDnQpeSQAruRe4eeaH-BO9PTfTW2q-JZ5sXIF7p2m0usnj2IPoBdktdf7B4A/exec";
 
 function sendToSheet(params){
+    params.year = selectedYear;
   return fetch(SHEET_API_URL, {
     method: "POST",
     body: new URLSearchParams(params)
@@ -410,7 +411,7 @@ function goDashboard(){
   
 function loadFromGoogleSheet(){
 
-  fetch(SHEET_API_URL)
+  fetch(SHEET_API_URL + "?year=" + selectedYear)
   .then(res => res.json())
   .then(data => {
 
@@ -1393,6 +1394,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
