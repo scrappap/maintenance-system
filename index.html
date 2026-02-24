@@ -557,10 +557,8 @@ function renderCalendar(){
   const firstDay=new Date(year,month,1).getDay();
   const daysInMonth=new Date(year,month+1,0).getDate();
 
-  const label=document.getElementById('monthLabel');
-  label.textContent=viewDate.toLocaleString('default',{month:'long',year:'numeric'});
-
-  const data = globalAssets;
+  document.getElementById('monthLabel').textContent=
+    viewDate.toLocaleString('default',{month:'long',year:'numeric'});
 
   const grid=document.createElement('div');
   grid.className='cal-grid';
@@ -569,47 +567,47 @@ function renderCalendar(){
     grid.appendChild(document.createElement('div'));
   }
 
-  for(let d=1;d<=daysInMonth;d++){
+  for(let dayNum=1;dayNum<=daysInMonth;dayNum++){
 
-  const day=document.createElement('div');
-  day.className='day';
-  day.innerHTML='<b>'+d+'</b>';
-  }
-  const fullDate=new Date(year,month,d).toLocaleDateString();
+    const day=document.createElement('div');
+    day.className='day';
+    day.innerHTML='<b>'+dayNum+'</b>';
 
-  const match=data.filter(r=>{
-    if(!r.startDate) return false;
-    return new Date(r.startDate).toLocaleDateString() === fullDate;
-  });
+    const fullDate=new Date(year,month,dayNum).toLocaleDateString();
 
-  if(match.length>0){
-    day.style.background='#003c2f';
-    day.innerHTML += '<div style="color:#00ffaa;font-size:10px">'
-      +match.length+' Asset</div>';
-  }
+    const match=globalAssets.filter(r=>{
+      if(!r.startDate) return false;
+      return new Date(r.startDate).toLocaleDateString()===fullDate;
+    });
 
-  // ✅ Highlight jika selected
-  if(selectedCalendarDate === fullDate){
-    day.style.outline = "2px solid #ffaa00";
-  }
-
-  day.onclick = function(){
-
-    // Jika klik hari sama → reset
-    if(selectedCalendarDate === fullDate){
-      selectedCalendarDate = null;
-      resetTableFilter();
-      renderCalendar();
-      return;
+    if(match.length>0){
+      day.style.background='#003c2f';
+      day.innerHTML += 
+        '<div style="color:#00ffaa;font-size:10px">'+
+        match.length+' Asset</div>';
     }
 
-    selectedCalendarDate = fullDate;
+    if(selectedCalendarDate===fullDate){
+      day.style.outline="2px solid #ffaa00";
+    }
 
-    filterTableByDate(fullDate);
-    renderCalendar();
-  };
+    day.onclick=function(){
 
-  grid.appendChild(day);
+      if(selectedCalendarDate===fullDate){
+        selectedCalendarDate=null;
+        resetTableFilter();
+      }else{
+        selectedCalendarDate=fullDate;
+        filterTableByDate(fullDate);
+      }
+
+      renderCalendar();
+    };
+
+    grid.appendChild(day);
+  }
+
+  calendar.appendChild(grid);
 }
 
   function filterTableByDate(selectedDate){
@@ -1261,6 +1259,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
