@@ -508,6 +508,18 @@ function changeYear(y){
   loadFromGoogleSheet();   // ✅ reload data from Sheet
 }
 
+    function prevMonth(){
+  viewDate.setMonth(viewDate.getMonth() - 1);
+  renderCalendar();
+  updateKPI();
+}
+
+function nextMonth(){
+  viewDate.setMonth(viewDate.getMonth() + 1);
+  renderCalendar();
+  updateKPI();
+}
+  
 /* ===============================
    RENDER YEAR CHART
 ================================ */
@@ -657,17 +669,7 @@ function resetTableFilter(){
   showToast("Filter cleared");
 }
 
-  function prevMonth(){
-  viewDate.setMonth(viewDate.getMonth() - 1);
-  renderCalendar();
-  updateKPI();
-}
 
-function nextMonth(){
-  viewDate.setMonth(viewDate.getMonth() + 1);
-  renderCalendar();
-  updateKPI();
-}
   
 /*================================
   POPULATE FILTER
@@ -1271,6 +1273,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
