@@ -359,7 +359,25 @@ function loadFromGoogleSheet(){
       tr.dataset.id = asset.id;
 
       tr.insertCell().innerHTML='<input type="checkbox" class="rowCheck">';
-      tr.insertCell().innerText = asset.assetNo;
+     const assetCell = tr.insertCell();
+
+assetCell.innerHTML = `
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <span>${asset.assetNo}</span>
+    <button onclick="goToDetail('${asset.assetNo}')" 
+      style="
+        background:none;
+        border:none;
+        color:#00e5ff;
+        cursor:pointer;
+        font-size:14px;
+      ">
+      👁
+    </button>
+  </div>
+`;
+
+      
       tr.insertCell().innerText = asset.typeCode;
       tr.insertCell().innerText = asset.description;
       tr.insertCell().innerText = asset.discipline;
@@ -396,6 +414,9 @@ function loadFromGoogleSheet(){
 
 }
 
+  function goToDetail(assetNo){
+  window.location.href = "asset-detail.html?asset=" + encodeURIComponent(assetNo);
+}
 /*===============================
   AUTOGENERATE NEXT YEAR
   =============================*/
@@ -1184,6 +1205,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
