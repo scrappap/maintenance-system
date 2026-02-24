@@ -296,7 +296,12 @@ function formatDate(dateString){
   return date.toLocaleDateString("en-GB"); 
   // Format: DD/MM/YYYY
 }
-
+  
+function toISO(date){
+  const d = new Date(date);
+  return d.toISOString().split("T")[0];
+}
+  
 /* ===============================
    INIT
 ================================ */
@@ -585,7 +590,7 @@ function renderCalendar(){
     day.className='day';
     day.innerHTML='<b>'+dayNum+'</b>';
 
-    const fullDate=new Date(year,month,dayNum).toLocaleDateString();
+    const fullDate = toISO(new Date(year,month,dayNum));
 
     const match=globalAssets.filter(r=>{
       if(!r.startDate) return false;
@@ -636,8 +641,7 @@ function filterTableByDate(selectedDate){
       return;
     }
 
-    // ✅ Banding string terus (elak format issue)
-    if(dateCell === formatDate(selectedDate)){
+    if(toISO(dateCell) === selectedDate){
 
       r.style.display = "";
       r.style.background = "#002f2f";
@@ -657,7 +661,7 @@ function filterTableByDate(selectedDate){
 
   showToast("Filtered by selected date");
 }
-
+  
 function resetTableFilter(){
 
   const rows = document.querySelectorAll('#assetTable tbody tr');
@@ -1274,6 +1278,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
