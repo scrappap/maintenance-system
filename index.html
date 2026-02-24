@@ -414,10 +414,23 @@ function loadFromGoogleSheet(){
   .then(res => res.json())
   .then(data => {
 
-    globalAssets = data.filter(a=>{
-      if(!a.startDate) return false;
-      return new Date(a.startDate).getFullYear() === selectedYear;
-    });
+globalAssets = data
+  .map(a => {
+
+    const iso = normalizeDate(a.startDate);
+
+    return {
+      ...a,
+      isoDate: iso
+    };
+
+  })
+  .filter(a => {
+
+    if(!a.isoDate) return false;
+
+    return new Date(a.isoDate).getFullYear() === selectedYear;
+  });
 
     populateFilters();
 
@@ -638,7 +651,7 @@ function renderYearChart(){
 
   globalAssets.forEach(a=>{
     if(!a.startDate) return;
-    const d = new Date(a.startDate);
+    const d = new Date(a.isoDate);
     if(d.getFullYear() === selectedYear){
       monthlyCount[d.getMonth()]++;
     }
@@ -698,9 +711,13 @@ const compareISO = new Date(year,month,dayNum)
   .toISOString()
   .split("T")[0];
 
-const match = globalAssets.filter(a=>{
+const compareISO = new Date(year,month,dayNum)
+  .toISOString()
+  .split("T")[0];
 
-  const assetISO = normalizeDate(a.startDate);
+const match = globalAssets.filter(a => 
+  a.isoDate === compareISO
+);
 
   return assetISO === compareISO;
 });
@@ -1384,6 +1401,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
