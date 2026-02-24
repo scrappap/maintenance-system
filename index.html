@@ -45,6 +45,34 @@ input,select{background:#0f1822;border:1px solid #00e5ff33;color:#00e5ff;border-
   to{opacity:1}
 }
 
+  .calendar-wrapper{
+  position:relative;
+  overflow:hidden;
+}
+
+.calendar-slide{
+  animation-duration:0.35s;
+  animation-fill-mode:forwards;
+}
+
+.slide-left{
+  animation-name:slideLeft;
+}
+
+.slide-right{
+  animation-name:slideRight;
+}
+
+@keyframes slideLeft{
+  from{transform:translateX(40px);opacity:0;}
+  to{transform:translateX(0);opacity:1;}
+}
+
+@keyframes slideRight{
+  from{transform:translateX(-40px);opacity:0;}
+  to{transform:translateX(0);opacity:1;}
+}
+  
 </style>
 </head>
 <body>
@@ -170,6 +198,7 @@ input,select{background:#0f1822;border:1px solid #00e5ff33;color:#00e5ff;border-
 
 <div class="card" style="padding:12px;margin-bottom:12px">
   <div style="margin-bottom:6px;color:#ffaa00">Monthly Schedule</div>
+  <div class="calendar-wrapper">
   <div id="calendar"></div>
 </div>
 
@@ -530,14 +559,52 @@ function changeYear(y){
   loadFromGoogleSheet();   // ✅ reload data from Sheet
 }
 
-    function prevMonth(){
-  viewDate.setMonth(viewDate.getMonth() - 1);
-  renderCalendar();
-  updateKPI();
+function prevMonth(){
+
+  let month = viewDate.getMonth();
+  let year = viewDate.getFullYear();
+
+  month--;
+  if(month < 0){
+    month = 11;
+    year--;
+  }
+
+  viewDate = new Date(year, month, 1);
+
+  animateCalendar("right");
 }
 
 function nextMonth(){
-  viewDate.setMonth(viewDate.getMonth() + 1);
+
+  let month = viewDate.getMonth();
+  let year = viewDate.getFullYear();
+
+  month++;
+  if(month > 11){
+    month = 0;
+    year++;
+  }
+
+  viewDate = new Date(year, month, 1);
+
+  animateCalendar("left");
+}
+
+function animateCalendar(direction){
+
+  const calendar = document.getElementById("calendar");
+
+  calendar.classList.remove("slide-left","slide-right");
+
+  void calendar.offsetWidth; // force reflow
+
+  if(direction === "left"){
+    calendar.classList.add("calendar-slide","slide-left");
+  }else{
+    calendar.classList.add("calendar-slide","slide-right");
+  }
+
   renderCalendar();
   updateKPI();
 }
@@ -1306,6 +1373,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
