@@ -347,7 +347,26 @@ function toISO(date){
   const d = new Date(date);
   return d.toISOString().split("T")[0];
 }
-  
+
+function normalizeDate(value){
+
+  if(!value) return null;
+
+  // Jika nombor Excel serial
+  if(!isNaN(value)){
+    const date = new Date((value - 25569) * 86400 * 1000);
+    return date.toISOString().split("T")[0];
+  }
+
+  // Cuba parse biasa
+  const d = new Date(value);
+
+  if(!isNaN(d)){
+    return d.toISOString().split("T")[0];
+  }
+
+  return null;
+}
 /* ===============================
    INIT
 ================================ */
@@ -675,17 +694,16 @@ function renderCalendar(){
     day.className = 'day';
     day.innerHTML = '<b>'+dayNum+'</b>';
 
-    const compareDate = new Date(year,month,dayNum)
-      .toLocaleDateString('en-GB');
+const compareISO = new Date(year,month,dayNum)
+  .toISOString()
+  .split("T")[0];
 
-    const match = globalAssets.filter(a=>{
-      if(!a.startDate) return false;
+const match = globalAssets.filter(a=>{
 
-      const assetDate = new Date(a.startDate)
-        .toLocaleDateString('en-GB');
+  const assetISO = normalizeDate(a.startDate);
 
-      return assetDate === compareDate;
-    });
+  return assetISO === compareISO;
+});
 
     if(match.length > 0){
       day.style.background = '#003c2f';
@@ -1366,6 +1384,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
