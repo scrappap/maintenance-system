@@ -272,7 +272,8 @@ let importPreviewData = [];
 
 let globalAssets = [];
 
-
+let selectedCalendarDate = null;
+  
 /*================================
    API
    =============================*/
@@ -570,39 +571,93 @@ function renderCalendar(){
 
   for(let d=1;d<=daysInMonth;d++){
 
-    const day=document.createElement('div');
-    day.className='day';
-    day.innerHTML='<b>'+d+'</b>';
+  const day=document.createElement('div');
+  day.className='day';
+  day.innerHTML='<b>'+d+'</b>';
 
-    const fullDate=new Date(year,month,d).toLocaleDateString();
+  const fullDate=new Date(year,month,d).toLocaleDateString();
 
-    const match=data.filter(r=>{
-      if(!r.startDate) return false;
-      return new Date(r.startDate).toLocaleDateString() === fullDate;
-    });
+  const match=data.filter(r=>{
+    if(!r.startDate) return false;
+    return new Date(r.startDate).toLocaleDateString() === fullDate;
+  });
 
-    if(match.length>0){
-      day.style.background='#003c2f';
-      day.innerHTML += '<div style="color:#00ffaa;font-size:10px">'
-        +match.length+' Asset</div>';
-    }
-
-    grid.appendChild(day);
+  if(match.length>0){
+    day.style.background='#003c2f';
+    day.innerHTML += '<div style="color:#00ffaa;font-size:10px">'
+      +match.length+' Asset</div>';
   }
 
-  calendar.appendChild(grid);
+  // ✅ Highlight jika selected
+  if(selectedCalendarDate === fullDate){
+    day.style.outline = "2px solid #ffaa00";
+  }
+
+  day.onclick = function(){
+
+    // Jika klik hari sama → reset
+    if(selectedCalendarDate === fullDate){
+      selectedCalendarDate = null;
+      resetTableFilter();
+      renderCalendar();
+      return;
+    }
+
+    selectedCalendarDate = fullDate;
+
+    filterTableByDate(fullDate);
+    renderCalendar();
+  };
+
+  grid.appendChild(day);
 }
 
-function prevMonth(){
-  viewDate.setMonth(viewDate.getMonth()-1);
-  renderCalendar();
+  function filterTableByDate(selectedDate){
+
+  const rows = document.querySelectorAll('#assetTable tbody tr');
+  let firstMatch = null;
+
+  rows.forEach(r=>{
+
+    const dateCell = r.children[8].innerText;
+
+    if(!dateCell){
+      r.style.display = "none";
+      return;
+    }
+
+    const rowDate = new Date(dateCell).toLocaleDateString();
+
+    if(rowDate === selectedDate){
+      r.style.display = "";
+      r.style.background = "#002f2f";
+      if(!firstMatch) firstMatch = r;
+    }else{
+      r.style.display = "none";
+      r.style.background = "";
+    }
+
+  });
+
+  if(firstMatch){
+    firstMatch.scrollIntoView({behavior:"smooth", block:"center"});
+  }
+
+  showToast("Filtered by selected date");
 }
 
-function nextMonth(){
-  viewDate.setMonth(viewDate.getMonth()+1);
-  renderCalendar();
-}
+  function resetTableFilter(){
 
+  const rows = document.querySelectorAll('#assetTable tbody tr');
+
+  rows.forEach(r=>{
+    r.style.display = "";
+    r.style.background = "";
+  });
+
+  showToast("Filter cleared");
+}
+  
 /*================================
   POPULATE FILTER
   ==============================*/
@@ -1205,6 +1260,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
