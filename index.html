@@ -656,6 +656,18 @@ function resetTableFilter(){
 
   showToast("Filter cleared");
 }
+
+  function prevMonth(){
+  viewDate.setMonth(viewDate.getMonth() - 1);
+  renderCalendar();
+  updateKPI();
+}
+
+function nextMonth(){
+  viewDate.setMonth(viewDate.getMonth() + 1);
+  renderCalendar();
+  updateKPI();
+}
   
 /*================================
   POPULATE FILTER
@@ -1259,6 +1271,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
