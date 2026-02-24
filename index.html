@@ -629,19 +629,21 @@ function filterTableByDate(selectedDate){
 
   rows.forEach(r=>{
 
-    const dateCell = r.children[8].innerText;
+    const dateCell = r.children[8].innerText.trim();
 
     if(!dateCell){
       r.style.display = "none";
       return;
     }
 
-    const rowDate = new Date(dateCell).toLocaleDateString();
+    // ✅ Banding string terus (elak format issue)
+    if(dateCell === formatDate(selectedDate)){
 
-    if(rowDate === selectedDate){
       r.style.display = "";
       r.style.background = "#002f2f";
+
       if(!firstMatch) firstMatch = r;
+
     }else{
       r.style.display = "none";
       r.style.background = "";
@@ -655,7 +657,6 @@ function filterTableByDate(selectedDate){
 
   showToast("Filtered by selected date");
 }
-
 
 function resetTableFilter(){
 
@@ -1273,6 +1274,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
