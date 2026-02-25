@@ -89,11 +89,10 @@ if(!session){
   window.location.href="maintenance-system.html";
 }
 
-const params = new URLSearchParams(window.location.search);
-const assetNo = params.get("asset");
+const assetNo = new URLSearchParams(window.location.search).get("asset") || "";
 
-if(!assetNo){
-  document.getElementById("detailBox").innerHTML = 
+if(assetNo === ""){
+  document.getElementById("detailBox").innerHTML =
     "<b style='color:red'>Asset No missing from URL</b>";
   throw new Error("AssetNo kosong");
 }
@@ -228,6 +227,7 @@ function goBack(){
 </body>
 
 </html>
+
 
 
 
