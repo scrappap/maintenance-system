@@ -112,7 +112,12 @@ input,select{background:#0f1822;border:1px solid #00e5ff33;color:#00e5ff;border-
 </div>
 
 <div id="mainSystem" style="display:none;margin-top:20px">
+   <!-- SEMUA CONTENT EDGENTA DI SINI -->
+</div>
+
 <div id="jkbSystem" style="display:none;margin-top:20px">
+   <!-- SEMUA CONTENT JKB DI SINI -->
+</div>
 
 <div class="headerBar">
   <div>
@@ -177,7 +182,7 @@ input,select{background:#0f1822;border:1px solid #00e5ff33;color:#00e5ff;border-
 </div>
 <div class="headerBar">
   <div>
-    <button class="btn btn-amber" onclick="goDashboard()">Dashboard</button>
+    <button class="btn btn-amber" onclick="openDashboard()">Dashboard</button>
   </div>
   <div>
     <button class="btn btn-gray" id="roleBtn">Role: admin</button>
@@ -290,34 +295,7 @@ input,select{background:#0f1822;border:1px solid #00e5ff33;color:#00e5ff;border-
 </div>
 
 </div>
-
-
 <div class="toast" id="toast"></div>
-<div id="comingModal" onclick="closeComingModal()" style="
-
-display:none;
-position:fixed;
-inset:0;
-background:rgba(0,0,0,0.7);
-justify-content:center;
-align-items:center;
-z-index:9999;
-">
-
-  <div onclick="event.stopPropagation()" style="
-  background:#121c26;
-  border:1px solid #ffaa00;
-  padding:40px;
-  border-radius:14px;
-  text-align:center;
-  box-shadow:0 0 20px #ffaa00;
-  width:320px;
-  ">
-    <h2 style="color:#ffaa00;margin-bottom:15px">🚧 COMING SOON</h2>
-    <p style="color:#cfefff;margin-bottom:20px">
-      Module Asset by JKB sedang dibangunkan.
-    </p>
-    <button class="btn btn-amber" onclick="closeComingModal()">Close</button>
   </div>
 
  </div>
@@ -1525,6 +1503,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
