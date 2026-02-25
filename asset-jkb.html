@@ -137,7 +137,9 @@ th{background:#081018;color:#00e5ff}
 <button class="btn" onclick="loadData()"><span>Refresh</span></button>
 </div>
 
-<button class="btn" onclick="goBack()"><spanBack</button</span>
+<button class="btn" onclick="goBack()">
+  <span>Back</span>
+</button>
     
 <div class="kpiWrap">
 <div class="kpi"><h4>Warranty Active</h4><div id="kpiActive">0</div></div>
@@ -385,55 +387,6 @@ function renderVendorChart(){
     );
 }
 
-function renderJKB(){
-
-    const today = new Date();
-    let active=0,expiring=0,due=0,overdue=0;
-
-    const tbody = document.querySelector("#jkbPPMTable tbody");
-    tbody.innerHTML="";
-
-    jkbAssets.forEach(a=>{
-        const diff=(new Date(a.endDate)-today)/(1000*60*60*24);
-
-        if(diff<0){}
-        else if(diff<=90) expiring++;
-        else active++;
-    });
-
-    jkbPPM.forEach(p=>{
-
-        const planned = new Date(p.planned);
-        const onsite = p.onsite?new Date(p.onsite):null;
-        let status="Pending";
-
-        if(onsite){
-            status="Done";
-        }else if(planned<today){
-            status="Overdue";
-            overdue++;
-        }else if((planned-today)/(1000*60*60*24)<=30){
-            status="Due Soon";
-            due++;
-        }
-
-        const tr = tbody.insertRow();
-        tr.insertCell().innerText=p.assetNo;
-        tr.insertCell().innerText=p.vendor;
-        tr.insertCell().innerText=planned.toLocaleDateString();
-        tr.insertCell().innerText=onsite?onsite.toLocaleDateString():"-";
-        tr.insertCell().innerText=status;
-
-        if(status==="Overdue") tr.classList.add("status-overdue");
-        if(status==="Due Soon") tr.classList.add("status-due");
-        if(status==="Done") tr.classList.add("status-done");
-    });
-
-    document.getElementById("jkbActive").innerText=active;
-    document.getElementById("jkbExpiring").innerText=expiring;
-    document.getElementById("jkbDue").innerText=due;
-    document.getElementById("jkbOverdue").innerText=overdue;
-}
 
 function goBack(){
 
@@ -442,11 +395,14 @@ function goBack(){
   } else {
     window.location.href = "index.html?open=system";
   }
+}    
+</script>
     
 </script>
 </body>
 
 </html>
+
 
 
 
