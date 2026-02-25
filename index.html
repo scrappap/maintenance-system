@@ -103,7 +103,7 @@ input,select{background:#0f1822;border:1px solid #00e5ff33;color:#00e5ff;border-
       <img src="img/UEM.jpg" style="height:70px;object-fit:contain">
       <div style="margin-top:10px;color:#00e5ff">Asset by Edgenta</div>
     </div>
-    <div onclick="comingSoon()" class="card" style="cursor:pointer;padding:20px;text-align:center">
+    <div onclick="openJKB()" class="card">
   <img src="img/JKB logo.png" style="height:70px;object-fit:contain">
   <div style="margin-top:10px;color:#00e5ff">Asset by JKB</div>
   </div>
@@ -494,6 +494,10 @@ assetCell.innerHTML = `
 function goToDetail(assetNo){
   console.log("Clicked Asset:", assetNo);
   window.location.href = "asset-detail.html?asset=" + encodeURIComponent(assetNo);
+}
+
+function openJKB(){
+    window.location.href = "asset-jkb.html";
 }
   
 /*===============================
@@ -1426,6 +1430,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
