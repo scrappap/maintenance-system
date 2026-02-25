@@ -103,6 +103,9 @@ if(!assetNo){
 // 🔥 CALL DETAIL READ
 let currentAsset = null;
 
+document.getElementById("detailBox").innerHTML = "Loading...";
+console.timeEnd("detailLoad");
+  
 fetch(SHEET_API_URL + "?action=detailRead&assetNo=" + encodeURIComponent(assetNo))
 .then(res=>res.json())
 .then(asset=>{
@@ -224,6 +227,7 @@ function goBack(){
 </body>
 
 </html>
+
 
 
 
