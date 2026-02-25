@@ -120,7 +120,19 @@ input,select{background:#0f1822;border:1px solid #00e5ff33;color:#00e5ff;border-
     <div class="headerBar">
       <button class="btn btn-amber" onclick="openDashboard()">Dashboard</button>
       <div>
-         <!-- KPI -->
+    </div>
+        <button class="btn btn-gray" id="roleBtn">Role: admin</button>
+        <button class="btn btn-danger" onclick="logout()">Logout</button>
+        <select id="yearSelect" onchange="changeYear(this.value)"></select>
+        <input type="text" id="searchBox" onkeyup="searchTable()" placeholder="Search anything...">
+        <select id="filterDiscipline"></select>
+        <select id="filterLocation"></select>
+      </div>
+      <div>
+        <div class="title">Preventive Maintenance</div>
+        <div class="subtle">Asset Management</div>
+      </div>
+     <!-- KPI -->
     <div class="kpiWrap">
       <div class="kpi">
         <h4>TOTAL (<span id="kpiYearLabel"></span>)</h4>
@@ -137,32 +149,6 @@ input,select{background:#0f1822;border:1px solid #00e5ff33;color:#00e5ff;border-
       <div class="kpi">
         <h4>THIS MONTH</h4>
         <div id="kpiMonth">0</div>
-      </div>
-    </div>
-        <div class="card" style="padding:12px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
-  <button class="btn btn-green" onclick="addRow()">Add</button>
-
-  <button class="btn btn-danger" onclick="deleteSelected()">Delete</button>
-
-  <button class="btn btn-amber" onclick="rescheduleSelected()">Reschedule</button>
-
-  <button class="btn" onclick="triggerImport()">Import</button>
-
-  <button class="btn" onclick="exportExcel()">Export</button>
-
-  <input type="file" id="excelFile" accept=".xlsx,.xls" style="display:none">
-
-</div>
-        <button class="btn btn-gray" id="roleBtn">Role: admin</button>
-        <button class="btn btn-danger" onclick="logout()">Logout</button>
-        <select id="yearSelect" onchange="changeYear(this.value)"></select>
-        <input type="text" id="searchBox" onkeyup="searchTable()" placeholder="Search anything...">
-        <select id="filterDiscipline"></select>
-        <select id="filterLocation"></select>
-      </div>
-      <div>
-        <div class="title">Preventive Maintenance</div>
-        <div class="subtle">Asset Management</div>
       </div>
     </div>
     
@@ -183,7 +169,20 @@ input,select{background:#0f1822;border:1px solid #00e5ff33;color:#00e5ff;border-
   </div>
 </div>
     
-   
+  <div class="card" style="padding:12px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+  <button class="btn btn-green" onclick="addRow()">Add</button>
+
+  <button class="btn btn-danger" onclick="deleteSelected()">Delete</button>
+
+  <button class="btn btn-amber" onclick="rescheduleSelected()">Reschedule</button>
+
+  <button class="btn" onclick="triggerImport()">Import</button>
+
+  <button class="btn" onclick="exportExcel()">Export</button>
+
+  <input type="file" id="excelFile" accept=".xlsx,.xls" style="display:none">
+
+</div> 
 
     <!-- TABLE -->
     <div class="card" style="max-height:420px;overflow:auto">
@@ -1479,6 +1478,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
