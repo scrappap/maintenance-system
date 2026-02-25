@@ -129,7 +129,17 @@ input,select{background:#0f1822;border:1px solid #00e5ff33;color:#00e5ff;border-
         <div class="subtle">Asset Management</div>
       </div>
     </div>
+    
+<div style="display:flex;justify-content:center;align-items:center;gap:20px;margin:15px 0;">
+  <button class="btn" onclick="prevMonth()">◀</button>
 
+  <div style="width:180px;text-align:center;color:#ffaa00;font-weight:600;">
+    <span id="monthLabel"></span>
+  </div>
+
+  <button class="btn" onclick="nextMonth()">▶</button>
+</div>
+    
     <!-- KPI -->
     <div class="kpiWrap">
       <div class="kpi">
@@ -1440,6 +1450,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
