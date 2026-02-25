@@ -46,8 +46,12 @@ body{
 <button class="btn" onclick="goBack()">Back</button>
 
 <div id="detailBox" class="card">
-Loading...
+  Loading...
 </div>
+
+<button class="btn" onclick="saveDetail()" style="margin-top:15px">
+  Save
+</button>
 
 <script>
 
@@ -68,38 +72,81 @@ if(!assetNo){
 }
 
 // 🔥 CALL DETAIL READ
+let currentAsset = null;
+
 fetch(SHEET_API_URL + "?action=detailRead&assetNo=" + encodeURIComponent(assetNo))
 .then(res=>res.json())
 .then(asset=>{
 
-  if(asset.status === "not found"){
-    document.getElementById("detailBox").innerHTML="Asset detail not found";
-    return;
-  }
+  currentAsset = asset;
 
   document.getElementById("detailBox").innerHTML=`
-    <div class="value"><span class="label">Asset No:</span><br>${asset.assetNo || "-"}</div>
-    <div class="value"><span class="label">Bumi:</span><br>${asset.bumi || "-"}</div>
-    <div class="value"><span class="label">Contact Bumi:</span><br>${asset.contactBumi || "-"}</div>
-    <div class="value"><span class="label">Vendor:</span><br>${asset.vendor || "-"}</div>
-    <div class="value"><span class="label">Contact Vendor:</span><br>${asset.contactVendor || "-"}</div>
-    <div class="value"><span class="label">Manufacturer:</span><br>${asset.manufacturer || "-"}</div>
-    <div class="value"><span class="label">Brand:</span><br>${asset.brand || "-"}</div>
-    <div class="value"><span class="label">Model:</span><br>${asset.model || "-"}</div>
-    <div class="value"><span class="label">Serial Number:</span><br>${asset.serialNumber || "-"}</div>
-    <div class="value"><span class="label">Price:</span><br>RM ${asset.price || "-"}</div>
-    <div class="value"><span class="label">LO No:</span><br>${asset.loNo || "-"}</div>
-    <div class="value"><span class="label">Category:</span><br>${asset.category || "-"}</div>
-    <div class="value"><span class="label">Start Date:</span><br>${asset.startDate || "-"}</div>
-    <div class="value"><span class="label">End Date:</span><br>${asset.endDate || "-"}</div>
-  `;
 
+    <div class="value">
+      <span class="label">Asset No</span><br>
+      <input id="assetNo" value="${asset.assetNo || ""}" readonly>
+    </div>
+
+    ${inputField("Bumi","bumi",asset.bumi)}
+    ${inputField("Contact Bumi","contactBumi",asset.contactBumi)}
+    ${inputField("Vendor","vendor",asset.vendor)}
+    ${inputField("Contact Vendor","contactVendor",asset.contactVendor)}
+    ${inputField("Manufacturer","manufacturer",asset.manufacturer)}
+    ${inputField("Brand","brand",asset.brand)}
+    ${inputField("Model","model",asset.model)}
+    ${inputField("Serial Number","serialNumber",asset.serialNumber)}
+    ${inputField("Price","price",asset.price)}
+    ${inputField("LO No","loNo",asset.loNo)}
+    ${inputField("Category","category",asset.category)}
+    ${inputField("Start Date","startDate",asset.startDate)}
+    ${inputField("End Date","endDate",asset.endDate)}
+
+  `;
 })
 .catch(err=>{
   document.getElementById("detailBox").innerHTML="Connection error";
   console.error(err);
 });
 
+function inputField(label,id,value){
+  return `
+    <div class="value">
+      <span class="label">${label}</span><br>
+      <input id="${id}" value="${value || ""}" style="width:100%">
+    </div>
+  `;
+}
+
+  function saveDetail(){
+
+  const data = {
+    action:"detailUpdate",
+    assetNo: document.getElementById("assetNo").value,
+    bumi: document.getElementById("bumi").value,
+    contactBumi: document.getElementById("contactBumi").value,
+    vendor: document.getElementById("vendor").value,
+    contactVendor: document.getElementById("contactVendor").value,
+    manufacturer: document.getElementById("manufacturer").value,
+    brand: document.getElementById("brand").value,
+    model: document.getElementById("model").value,
+    serialNumber: document.getElementById("serialNumber").value,
+    price: document.getElementById("price").value,
+    loNo: document.getElementById("loNo").value,
+    category: document.getElementById("category").value,
+    startDate: document.getElementById("startDate").value,
+    endDate: document.getElementById("endDate").value
+  };
+
+  fetch(SHEET_API_URL,{
+    method:"POST",
+    body:new URLSearchParams(data)
+  })
+  .then(res=>res.json())
+  .then(()=>{
+    alert("Detail Updated Successfully");
+  });
+}
+  
 function goBack(){
 
   if(window.history.length > 1){
@@ -115,6 +162,7 @@ function goBack(){
 </body>
 
 </html>
+
 
 
 
