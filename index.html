@@ -120,6 +120,26 @@ input,select{background:#0f1822;border:1px solid #00e5ff33;color:#00e5ff;border-
     <div class="headerBar">
       <button class="btn btn-amber" onclick="openDashboard()">Dashboard</button>
       <div>
+         <!-- KPI -->
+    <div class="kpiWrap">
+      <div class="kpi">
+        <h4>TOTAL (<span id="kpiYearLabel"></span>)</h4>
+        <div id="kpiTotal">0</div>
+      </div>
+      <div class="kpi">
+        <h4>DONE (<span id="kpiYearLabel2"></span>)</h4>
+        <div id="kpiDone">0</div>
+      </div>
+      <div class="kpi">
+        <h4>PENDING (<span id="kpiYearLabel3"></span>)</h4>
+        <div id="kpiPending">0</div>
+      </div>
+      <div class="kpi">
+        <h4>THIS MONTH</h4>
+        <div id="kpiMonth">0</div>
+      </div>
+    </div>
+        
         <button class="btn btn-gray" id="roleBtn">Role: admin</button>
         <button class="btn btn-danger" onclick="logout()">Logout</button>
         <select id="yearSelect" onchange="changeYear(this.value)"></select>
@@ -150,25 +170,7 @@ input,select{background:#0f1822;border:1px solid #00e5ff33;color:#00e5ff;border-
   </div>
 </div>
     
-    <!-- KPI -->
-    <div class="kpiWrap">
-      <div class="kpi">
-        <h4>TOTAL (<span id="kpiYearLabel"></span>)</h4>
-        <div id="kpiTotal">0</div>
-      </div>
-      <div class="kpi">
-        <h4>DONE (<span id="kpiYearLabel2"></span>)</h4>
-        <div id="kpiDone">0</div>
-      </div>
-      <div class="kpi">
-        <h4>PENDING (<span id="kpiYearLabel3"></span>)</h4>
-        <div id="kpiPending">0</div>
-      </div>
-      <div class="kpi">
-        <h4>THIS MONTH</h4>
-        <div id="kpiMonth">0</div>
-      </div>
-    </div>
+   
 
     <!-- TABLE -->
     <div class="card" style="max-height:420px;overflow:auto">
@@ -1464,6 +1466,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
