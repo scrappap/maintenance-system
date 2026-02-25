@@ -123,6 +123,7 @@ input,select{background:#0f1822;border:1px solid #00e5ff33;color:#00e5ff;border-
         <button class="btn btn-gray" id="roleBtn">Role: admin</button>
         <button class="btn btn-danger" onclick="logout()">Logout</button>
         <select id="yearSelect" onchange="changeYear(this.value)"></select>
+        <input type="text" id="searchBox" onkeyup="searchTable()" placeholder="Search anything...">
         <select id="filterDiscipline"></select>
         <select id="filterLocation"></select>
       </div>
@@ -1463,6 +1464,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
