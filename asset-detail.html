@@ -101,18 +101,14 @@ fetch(SHEET_API_URL + "?action=detailRead&assetNo=" + encodeURIComponent(assetNo
 });
 
 function goBack(){
-  const params = new URLSearchParams(window.location.search);
-  const year = params.get("year") || new Date().getFullYear();
-
-  window.location.href = 
-    "maintenance-system.html?open=system&year=" + year;
+  window.location.href = "index.htm?open=system";
 }
-
 </script>
 
 </body>
 
 </html>
+
 
 
 
