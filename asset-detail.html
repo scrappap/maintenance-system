@@ -81,11 +81,7 @@ body{
 const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwAJl-cEwnDnQpeSQAruRe4eeaH-BO9PTfTW2q-JZ5sXIF7p2m0usnj2IPoBdktdf7B4A/exec";
 const SESSION_KEY='pm_user_session';
 
-if(!assetNo){
-  document.getElementById("detailBox").innerHTML = 
-    "<b style='color:red'>Asset No missing from URL</b>";
-  throw new Error("AssetNo kosong");
-}
+
   
 // Protect page
 const session = JSON.parse(localStorage.getItem(SESSION_KEY));
@@ -96,6 +92,12 @@ if(!session){
 const params = new URLSearchParams(window.location.search);
 const assetNo = params.get("asset");
 
+if(!assetNo){
+  document.getElementById("detailBox").innerHTML = 
+    "<b style='color:red'>Asset No missing from URL</b>";
+  throw new Error("AssetNo kosong");
+}
+  
 if(!assetNo){
   document.getElementById("detailBox").innerHTML="No asset selected";
 }
@@ -227,6 +229,7 @@ function goBack(){
 </body>
 
 </html>
+
 
 
 
