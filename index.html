@@ -139,6 +139,13 @@ input,select{background:#0f1822;border:1px solid #00e5ff33;color:#00e5ff;border-
 
   <button class="btn" onclick="nextMonth()">▶</button>
 </div>
+
+<div class="card" style="padding:12px;margin-bottom:12px">
+  <div style="margin-bottom:6px;color:#ffaa00">Monthly Schedule</div>
+  <div class="calendar-wrapper">
+    <div id="calendar"></div>
+  </div>
+</div>
     
     <!-- KPI -->
     <div class="kpiWrap">
@@ -418,6 +425,8 @@ function openDashboard(){
 function openSystem(){
     hideAllModules();
     document.getElementById('mainSystem').style.display='block';
+  initYear();              // 🔥 TAMBAH INI
+  loadFromGoogleSheet();   // 🔥 DAN INI
 }
 
 function openJKBSystem(){
@@ -591,15 +600,16 @@ sendToSheet({
    YEAR DROPDOWN
 ================================ */
 function initYear(){
-  const yearSelect=document.getElementById('yearSelect');
-  yearSelect.innerHTML='';
-  const thisYear=new Date().getFullYear();
+  const yearSelect = document.getElementById('yearSelect');
+  yearSelect.innerHTML = '';
 
-  for(let y=thisYear-2;y<=thisYear+3;y++){
-    const opt=document.createElement('option');
-    opt.value=y;
-    opt.textContent=y;
-    if(y===selectedYear) opt.selected=true;
+  const thisYear = new Date().getFullYear();
+
+  for(let y = thisYear - 2; y <= thisYear + 3; y++){
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = y;
+    if(y === selectedYear) opt.selected = true;
     yearSelect.appendChild(opt);
   }
 }
@@ -1450,6 +1460,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
