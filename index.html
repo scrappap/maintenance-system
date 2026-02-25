@@ -409,23 +409,24 @@ function goDashboard(){
   AUTOLOAD GOOGLE SHEET
   =============================*/
   
+let localCache = null;
+
 function loadFromGoogleSheet(){
 
-  fetch(SHEET_API_URL + "?year=" + selectedYear)
-  .then(res => res.json())
-  .then(data => {
+  if(localCache){
+    globalAssets = localCache;
+    renderAll();
+    return;
+  }
 
-globalAssets = data
-  .map(a => {
-
-    const iso = normalizeDate(a.startDate);
-
-    return {
-      ...a,
-      isoDate: iso
-    };
-
-  })
+  fetch(SHEET_API_URL)
+    .then(res=>res.json())
+    .then(data=>{
+      localCache = data;
+      globalAssets = data;
+      renderAll();
+    });
+}
   .filter(a => {
 
     if(!a.isoDate) return false;
@@ -1394,6 +1395,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
