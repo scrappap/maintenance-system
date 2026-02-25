@@ -38,6 +38,25 @@ body{
 .value{
   margin-bottom:12px;
 }
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.form-group{
+  display:flex;
+  flex-direction:column;
+}
+
+.form-group input{
+  background:#0f1822;
+  border:1px solid #00e5ff33;
+  color:#00e5ff;
+  padding:6px;
+  border-radius:6px;
+}
 </style>
 </head>
 <body>
@@ -90,28 +109,38 @@ fetch(SHEET_API_URL + "?action=detailRead&assetNo=" + encodeURIComponent(assetNo
 
   currentAsset = asset;
 
-  document.getElementById("detailBox").innerHTML=`
+document.getElementById("detailBox").innerHTML = `
 
-    <div class="value">
-      <span class="label">Asset No</span><br>
-      <input id="assetNo" value="${asset.assetNo || ""}" readonly>
-    </div>
+<div class="form-group">
+  <span class="label">Asset No</span>
+  <input id="assetNo" value="${asset.assetNo || ""}" readonly>
+</div>
 
-    ${inputField("Bumi","bumi",asset.bumi)}
-    ${inputField("Contact Bumi","contactBumi",asset.contactBumi)}
-    ${inputField("Vendor","vendor",asset.vendor)}
-    ${inputField("Contact Vendor","contactVendor",asset.contactVendor)}
-    ${inputField("Manufacturer","manufacturer",asset.manufacturer)}
-    ${inputField("Brand","brand",asset.brand)}
-    ${inputField("Model","model",asset.model)}
-    ${inputField("Serial Number","serialNumber",asset.serialNumber)}
-    ${inputField("Price","price",asset.price)}
-    ${inputField("LO No","loNo",asset.loNo)}
-    ${inputField("Category","category",asset.category)}
-    ${inputField("Start Date","startDate",asset.startDate)}
-    ${inputField("End Date","endDate",asset.endDate)}
+<div class="form-grid">
 
-  `;
+  ${inputField("Bumi","bumi",asset.bumi)}
+  ${inputField("Vendor","vendor",asset.vendor)}
+
+  ${inputField("Contact Bumi","contactBumi",asset.contactBumi)}
+  ${inputField("Contact Vendor","contactVendor",asset.contactVendor)}
+
+  ${inputField("Manufacturer","manufacturer",asset.manufacturer)}
+  ${inputField("Brand","brand",asset.brand)}
+
+  ${inputField("Model","model",asset.model)}
+  ${inputField("Serial Number","serialNumber",asset.serialNumber)}
+
+  ${inputField("Price","price",asset.price)}
+  ${inputField("LO No","loNo",asset.loNo)}
+
+  ${inputField("Category","category",asset.category)}
+  ${inputField("Start Date","startDate",asset.startDate)}
+
+  ${inputField("End Date","endDate",asset.endDate)}
+
+</div>
+`;
+  
 })
 .catch(err=>{
   document.getElementById("detailBox").innerHTML="Connection error";
@@ -120,10 +149,9 @@ fetch(SHEET_API_URL + "?action=detailRead&assetNo=" + encodeURIComponent(assetNo
 
 function inputField(label,id,value){
   return `
-    <div class="value">
-      <span class="label">${label}</span><br>
-      <input id="${id}" value="${value || ""}" 
-             style="width:100%" readonly>
+    <div class="form-group">
+      <span class="label">${label}</span>
+      <input id="${id}" value="${value || ""}" readonly>
     </div>
   `;
 }
@@ -196,6 +224,7 @@ function goBack(){
 </body>
 
 </html>
+
 
 
 
