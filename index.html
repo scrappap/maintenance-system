@@ -1256,40 +1256,78 @@ function convertExcelDate(value){
   EXPORT
 =========================================*/
 
-function exportExcel(){
+async function exportExcel(){
 
-  const data = globalAssets;
+  try{
 
-  if(data.length===0){
-    showToast('No data');
-    return;
+    // 🔥 Ambil maintenance data
+    const maintenanceRes = await fetch(
+      SHEET_API_URL + "?year=" + selectedYear
+    );
+    const maintenanceData = await maintenanceRes.json();
+
+    // 🔥 Ambil asset master data
+    const masterRes = await fetch(
+      SHEET_API_URL + "?action=getAssetMaster"
+    );
+    const masterData = await masterRes.json();
+
+    // Convert master jadi object lookup
+    const masterMap = {};
+    masterData.forEach(m=>{
+      masterMap[m.assetNo] = m;
+    });
+
+    // Header gabungan
+    const header = [
+      "Asset No",
+      "Type Code",
+      "Description",
+      "Discipline",
+      "Location",
+      "Frequency",
+      "Target Date",
+      "Remark",
+      "Vendor",
+      "Brand",
+      "Model",
+      "Serial Number",
+      "Price"
+    ];
+
+    const rows = maintenanceData.map(m=>{
+
+      const detail = masterMap[m.assetNo] || {};
+
+      return [
+        m.assetNo || "",
+        m.typeCode || "",
+        m.description || "",
+        m.discipline || "",
+        m.location || "",
+        m.frequency || "",
+        m.startDate || "",
+        m.remark || "",
+        detail.vendor || "",
+        detail.brand || "",
+        detail.model || "",
+        detail.serialNumber || "",
+        detail.price || ""
+      ];
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet([header, ...rows]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Combined");
+
+    XLSX.writeFile(wb, "Maintenance_Combined_"+selectedYear+".xlsx");
+
+    showToast("Combined export successful");
+
+  }catch(err){
+    console.error(err);
+    showToast("Export error");
   }
-
-  const header=[
-    'ASSET NO','TYPE CODE','ASSET DESCRIPTION',
-    'DISCIPLINE','CODE LOCATION','LOCATION',
-    'FREQUENCY','TARGET DATE','REMARK'
-  ];
-
-  const rows = data.map(r=>[
-    r.assetNo || '',
-    r.typeCode || '',
-    r.description || '',
-    r.discipline || '',
-    r.codeLocation || '',
-    r.location || '',
-    r.frequency || '',
-    r.startDate || '',
-    r.remark || ''
-  ]);
-
-  const ws=XLSX.utils.aoa_to_sheet([header,...rows]);
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,'Maintenance');
-
-  XLSX.writeFile(wb,'Maintenance_'+selectedYear+'.xlsx');
-
-  showToast('Export '+selectedYear+' successful');
 }
 /*=========================================
 LOGIN/LOGOUT
@@ -1388,6 +1426,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
