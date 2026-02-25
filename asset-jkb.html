@@ -174,7 +174,20 @@ Export 30 Days Reminder
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+    
+const SESSION_KEY='pm_user_session';
 
+window.addEventListener("DOMContentLoaded",()=>{
+
+    const session = JSON.parse(localStorage.getItem(SESSION_KEY));
+
+    if(!session){
+        window.location.href="index.html";
+        return;
+    }
+
+});
+    
 const API_URL = "https://script.google.com/macros/s/AKfycbwClplX-V7w5xN7BPV4iuU-GdDgb3Dv-tNBcpWW8eo5MrbA5nEedoGpx9Prl-O9WfQ5-Q/exec";
 
 let assets=[];
@@ -371,4 +384,5 @@ function renderVendorChart(){
 }
 </script>
 </body>
+
 </html>
