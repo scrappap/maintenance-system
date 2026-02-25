@@ -485,9 +485,11 @@ function loadFromGoogleSheet(){
 
 }
 
-  function goToDetail(assetNo){
+function goToDetail(assetNo){
+  console.log("Clicked Asset:", assetNo);
   window.location.href = "asset-detail.html?asset=" + encodeURIComponent(assetNo);
 }
+  
 /*===============================
   AUTOGENERATE NEXT YEAR
   =============================*/
@@ -1380,6 +1382,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
