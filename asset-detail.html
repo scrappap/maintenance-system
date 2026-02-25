@@ -49,9 +49,12 @@ body{
   Loading...
 </div>
 
-<button class="btn" onclick="saveDetail()" style="margin-top:15px">
-  Save
-</button>
+<div style="margin-top:15px">
+  <button class="btn" id="editBtn" onclick="enableEdit()">Edit</button>
+  <button class="btn" id="saveBtn" onclick="saveDetail()" style="display:none">
+    Save
+  </button>
+</div>
 
 <script>
 
@@ -112,12 +115,13 @@ function inputField(label,id,value){
   return `
     <div class="value">
       <span class="label">${label}</span><br>
-      <input id="${id}" value="${value || ""}" style="width:100%">
+      <input id="${id}" value="${value || ""}" 
+             style="width:100%" readonly>
     </div>
   `;
 }
 
-  function saveDetail(){
+function saveDetail(){
 
   const data = {
     action:"detailUpdate",
@@ -143,8 +147,31 @@ function inputField(label,id,value){
   })
   .then(res=>res.json())
   .then(()=>{
+
     alert("Detail Updated Successfully");
+
+    // Lock semula
+    document.querySelectorAll("#detailBox input")
+      .forEach(input=>{
+        input.setAttribute("readonly",true);
+      });
+
+    document.getElementById("editBtn").style.display="inline-block";
+    document.getElementById("saveBtn").style.display="none";
   });
+}
+
+  function enableEdit(){
+
+  document.querySelectorAll("#detailBox input")
+    .forEach(input=>{
+      if(input.id !== "assetNo"){ // lock assetNo
+        input.removeAttribute("readonly");
+      }
+    });
+
+  document.getElementById("editBtn").style.display="none";
+  document.getElementById("saveBtn").style.display="inline-block";
 }
   
 function goBack(){
@@ -162,6 +189,7 @@ function goBack(){
 </body>
 
 </html>
+
 
 
 
