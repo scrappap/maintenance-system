@@ -123,6 +123,8 @@ input,select{background:#0f1822;border:1px solid #00e5ff33;color:#00e5ff;border-
         <button class="btn btn-gray" id="roleBtn">Role: admin</button>
         <button class="btn btn-danger" onclick="logout()">Logout</button>
         <select id="yearSelect" onchange="changeYear(this.value)"></select>
+        <select id="filterDiscipline"></select>
+        <select id="filterLocation"></select>
       </div>
       <div>
         <div class="title">Preventive Maintenance</div>
@@ -401,7 +403,7 @@ const excelInput = document.getElementById('excelFile');
 if(excelInput){
   excelInput.addEventListener('change', handleImport);
 }
-
+})
 
 /* ===============================
    MODULE CONTROLLER (UNIFIED)
@@ -681,7 +683,7 @@ function renderYearChart(){
 
   globalAssets.forEach(a=>{
     if(!a.startDate) return;
-    const d = new Date(a.isoDate);
+    const d = new Date(a.startDate);
     if(d.getFullYear() === selectedYear){
       monthlyCount[d.getMonth()]++;
     }
@@ -741,7 +743,7 @@ function renderCalendar(){
       .split("T")[0];
 
     const match = globalAssets.filter(a => 
-      a.isoDate === compareISO
+      a.startDate === compareISO
     );
 
     if(match.length > 0){
@@ -1461,6 +1463,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
