@@ -116,7 +116,9 @@ input,select{background:#0f1822;border:1px solid #00e5ff33;color:#00e5ff;border-
 
 <div class="headerBar">
   <div>
-    <button class="btn btn-amber" onclick="openDashboard()">Dashboard</button>
+    <button class="btn btn-amber" onclick="openDashboard()">
+  <span>Dashboard</span>
+</button>
   </div>
   <div>
     <button class="btn btn-gray" id="roleBtnJKB">Role: admin</button>
@@ -474,31 +476,28 @@ window.addEventListener('DOMContentLoaded',()=>{
 
 function hideAllModules(){
 
-    document.getElementById('homePage').style.display='none';
-    document.getElementById('mainSystem').style.display='none';
+    const home = document.getElementById('homePage');
+    const main = document.getElementById('mainSystem');
+    const jkb  = document.getElementById('jkbSystem');
 
-    const jkb = document.getElementById('jkbSystem');
-    if(jkb) jkb.style.display='none';
+    if(home) home.style.display='none';
+    if(main) main.style.display='none';
+    if(jkb)  jkb.style.display='none';
 }
 
 function openDashboard(){
-
     hideAllModules();
     document.getElementById('homePage').style.display='block';
 }
 
-function openEdgentaSystem(){
-
+function openSystem(){
     hideAllModules();
     document.getElementById('mainSystem').style.display='block';
 }
 
 function openJKBSystem(){
-
     hideAllModules();
     document.getElementById('jkbSystem').style.display='block';
-
-    loadJKBData();
 }
 
 /*===============================
@@ -1526,6 +1525,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
