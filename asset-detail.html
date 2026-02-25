@@ -101,7 +101,11 @@ fetch(SHEET_API_URL + "?action=detailRead&assetNo=" + encodeURIComponent(assetNo
 });
 
 function goBack(){
-  window.location.href = "mainSystem";
+  const params = new URLSearchParams(window.location.search);
+  const year = params.get("year") || new Date().getFullYear();
+
+  window.location.href = 
+    "maintenance-system.html?open=system&year=" + year;
 }
 
 </script>
@@ -109,5 +113,6 @@ function goBack(){
 </body>
 
 </html>
+
 
 
