@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JKB Warranty Enterprise</title>
+<link rel="icon" type="image/png" href="img/JKB logo.png">
+
+
+<style>
+body{margin:0;font-family:Segoe UI;background:#0b1118;color:#cfefff}
+.header{background:#0f1822;padding:15px;display:flex;justify-content:space-between}
+.kpiWrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;padding:20px}
+.kpi{background:#121c26;padding:15px;border-radius:10px;text-align:center}
+.kpi h4{color:#ffaa00;margin:0;font-size:12px}
+.kpi div{font-size:22px;font-weight:bold;margin-top:6px}
+.card{margin:20px;background:#121c26;padding:15px;border-radius:10px}
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px;font-size:12px;border-bottom:1px solid #1e2b36}
+th{background:#081018;color:#00e5ff}
+.status-overdue{background:#3b0000;color:#ff3b3b}
+.status-due{background:#3b2a00;color:#ffaa00}
+.status-done{color:#00ffaa}
+.btn{background:#111a24;color:#00e5ff;border:1px solid #00e5ff55;padding:6px 12px;cursor:pointer;border-radius:6px}
+.status-overdue{
+    background:#3b0000;
+    color:#ff3b3b;
+    font-weight:bold;
+}
+
+.status-due{
+    background:#3b2a00;
+    color:#ffaa00;
+    font-weight:bold;
+}
+
+.status-done{
+    color:#00ffaa;
+    font-weight:bold;
+}
+@keyframes blink {
+  50% { opacity: 0.4; }
+}
+
+.status-overdue{
+  animation: blink 1s infinite;
+}
+.btn{
+    position: relative;
+    background:#111a24;
+    color:#00e5ff;
+    border:none;
+    padding:8px 16px;
+    cursor:pointer;
+    border-radius:8px;
+    overflow:hidden;
+    z-index:1;
+    transition:0.3s ease;
+}
+
+/* TEXT layer */
+.btn span{
+    position: relative;
+    z-index: 2;
+}
+
+.btn:hover{
+    color:#ffffff;
+    background:#00e5ff22;
+    box-shadow: 0 0 8px #00e5ff,
+                0 0 16px #00e5ff33;
+    transform: translateY(-2px);
+}
+.btn:active{
+    transform: scale(0.95);
+    box-shadow: 0 0 4px #00e5ff;
+}
+.btn::before{
+    content:"";
+    position:absolute;
+    top:-2px;
+    left:-2px;
+    right:-2px;
+    bottom:-2px;
+    background:linear-gradient(
+        45deg,
+        #00e5ff,
+        #00ffaa,
+        #00e5ff,
+        #00ffaa
+    );
+    background-size:400%;
+    border-radius:10px;
+    z-index:0;   /* PENTING */
+    animation: neonMove 6s linear infinite;
+    opacity:0;
+    transition:0.3s;
+}
+
+.btn:hover::before{
+    opacity:1;
+}
+
+.btn:hover::before{
+    opacity:1;
+}
+
+@keyframes neonMove{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+.btn:hover{
+    box-shadow:
+        0 0 8px #00e5ff,
+        0 0 18px #00e5ff,
+        0 0 30px #00e5ff66;
+    transform: translateY(-2px);
+}
+
+.btn:active{
+    transform: scale(0.95);
+}
+.btn-danger::before{
+    background:linear-gradient(
+        45deg,
+        #ff3b3b,
+        #ff6b6b,
+        #ff3b3b
+    );
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+<div>JKB Warranty System</div>
+<button class="btn" onclick="loadData()"><span>Refresh</span></button>
+</div>
+
+<div class="kpiWrap">
+<div class="kpi"><h4>Warranty Active</h4><div id="kpiActive">0</div></div>
+<div class="kpi"><h4>Expiring < 90 Days</h4><div id="kpiExpiring">0</div></div>
+<div class="kpi"><h4>PPM Due 30 Days</h4><div id="kpiDue">0</div></div>
+<div class="kpi"><h4>PPM Overdue</h4><div id="kpiOverdue">0</div></div>
+</div>
+
+<button class="btn" onclick="exportVendorReminder()"><span>
+Export 30 Days Reminder
+</span></button>
+
+<div class="card">
+<h3 style="color:#ffaa00">Vendor Performance</h3>
+<canvas id="vendorChart" height="100"></canvas>
+</div>
+
+<div class="card">
+<h3 style="color:#ffaa00">PPM Monitoring</h3>
+<table id="ppmTable">
+<thead>
+<tr>
+<th>ASSET NO</th>
+<th>VENDOR</th>
+<th>PLANNED DATE</th>
+<th>ONSITE DATE</th>
+<th>STATUS</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+const API_URL = "https://script.google.com/macros/s/AKfycbwClplX-V7w5xN7BPV4iuU-GdDgb3Dv-tNBcpWW8eo5MrbA5nEedoGpx9Prl-O9WfQ5-Q/exec";
+
+let assets=[];
+let ppm=[];
+let vendorChartInstance = null;
+
+function loadData(){
+fetch(API_URL+"?action=getAll")
+.then(res=>res.json())
+.then(data=>{
+assets=data.assets;
+ppm=data.ppm;
+render();
+renderVendorChart();
+});
+}
+
+function render(){
+const today=new Date();
+let active=0,expiring=0,due=0,overdue=0;
+
+const tbody=document.querySelector("#ppmTable tbody");
+tbody.innerHTML="";
+
+assets.forEach(a=>{
+    const diff=(new Date(a.endDate)-today)/(1000*60*60*24);
+
+    if(diff < 0){
+        // expired - optional kira kalau nak
+    }
+    else if(diff <= 90){
+        expiring++;
+    }
+    else{
+        active++;
+    }
+});
+
+ppm.forEach(p=>{
+const planned=new Date(p.planned);
+const onsite=p.onsite?new Date(p.onsite):null;
+let status="Pending";
+
+if(onsite){
+status="Done";
+}else if(planned<today){
+status="Overdue";
+overdue++;
+}else if((planned-today)/(1000*60*60*24)<=30){
+status="Due Soon";
+due++;
+}
+
+const tr=tbody.insertRow();
+tr.insertCell().innerText=p.assetNo;
+tr.insertCell().innerText=p.vendor;
+tr.insertCell().innerText=planned.toLocaleDateString();
+tr.insertCell().innerText=onsite?onsite.toLocaleDateString():"-";
+tr.insertCell().innerText=status;
+
+if(status==="Overdue") tr.className="status-overdue";
+if(status==="Due Soon") tr.className="status-due";
+if(status==="Done") tr.className="status-done";
+});
+
+document.getElementById("kpiActive").innerText=active;
+document.getElementById("kpiExpiring").innerText=expiring;
+document.getElementById("kpiDue").innerText=due;
+document.getElementById("kpiOverdue").innerText=overdue;
+}
+
+loadData();
+
+function getPPMStatus(plannedDate, onsiteDate){
+    const today = new Date();
+    const planned = new Date(plannedDate);
+
+    if(onsiteDate){
+        return "DONE";
+    }
+
+    const diffDays = (planned - today) / (1000*60*60*24);
+
+    if(diffDays < 0){
+        return "OVERDUE";
+    }
+
+    if(diffDays <= 30){
+        return "DUE_SOON";
+    }
+
+    return "PENDING";
+}
+
+function generateVendorReminder(){
+
+    const today = new Date();
+
+    const upcoming = ppm.filter(p=>{
+        const planned = new Date(p.planned);
+        const diff = (planned - today)/(1000*60*60*24);
+        return diff >= 0 && diff <= 30 && !p.onsite;
+    });
+
+    return upcoming;
+}
+
+function exportVendorReminder(){
+
+    const list = generateVendorReminder();
+
+    if(list.length === 0){
+        alert("No upcoming PPM in 30 days");
+        return;
+    }
+
+    const header = ["Asset No","Vendor","Planned Date"];
+
+    const rows = list.map(p=>[
+        p.assetNo,
+        p.vendor,
+        new Date(p.planned).toLocaleDateString()
+    ]);
+
+    const ws = XLSX.utils.aoa_to_sheet([header,...rows]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,"Reminder");
+
+    XLSX.writeFile(wb,"Vendor_Reminder_30Days.xlsx");
+}
+
+function calculateVendorPerformance(){
+
+    const vendorStats = {};
+
+    ppm.forEach(p=>{
+
+        if(!vendorStats[p.vendor]){
+            vendorStats[p.vendor] = {
+                total:0,
+                ontime:0,
+                late:0
+            };
+        }
+
+        vendorStats[p.vendor].total++;
+
+        if(p.onsite){
+            const planned = new Date(p.planned);
+            const onsite = new Date(p.onsite);
+
+            if(onsite <= planned){
+                vendorStats[p.vendor].ontime++;
+            }else{
+                vendorStats[p.vendor].late++;
+            }
+        }
+    });
+
+    return vendorStats;
+}
+
+function renderVendorChart(){
+
+    const stats = calculateVendorPerformance();
+
+    const labels = [];
+    const performance = [];
+
+    for(const v in stats){
+        labels.push(v);
+        const percent = 
+        (stats[v].ontime / stats[v].total) * 100;
+        performance.push(percent.toFixed(1));
+    }
+
+    if(vendorChartInstance){
+        vendorChartInstance.destroy();
+    }
+
+    vendorChartInstance = new Chart(
+        document.getElementById("vendorChart"),
+        {
+            type:"bar",
+            data:{
+                labels:labels,
+                datasets:[{
+                    label:"Performance %",
+                    data:performance
+                }]
+            }
+        }
+    );
+}
+</script>
+</body>
+</html>
