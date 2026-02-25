@@ -102,11 +102,10 @@ fetch(SHEET_API_URL + "?action=detailRead&assetNo=" + encodeURIComponent(assetNo
 
 function goBack(){
 
-  if(document.referrer){
+  if(window.history.length > 1){
     window.history.back();
   } else {
-    // fallback kalau user buka detail direct
-    window.location.href = "index.html";
+    window.location.href = "index.html?open=system";
   }
 
 }
@@ -116,6 +115,7 @@ function goBack(){
 </body>
 
 </html>
+
 
 
 
