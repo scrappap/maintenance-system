@@ -220,6 +220,7 @@ function loadData(){
 fetch(API_URL+"?action=getAll")
 .then(res=>res.json())
 .then(data=>{
+    console.log("DATA RETURN:", data);
 assets=data.assets;
 ppm=data.ppm;
 render();
@@ -473,6 +474,7 @@ function renderVendorChart(){
 </body>
 
 </html>
+
 
 
 
