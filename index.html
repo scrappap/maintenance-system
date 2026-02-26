@@ -710,6 +710,10 @@ function animateCalendar(direction){
 
 function renderYearChart(){
 
+  const canvas = document.getElementById("yearChart");
+
+  if(!canvas) return;   // 🔥 Elak error
+
   const monthlyCount = new Array(12).fill(0);
 
   globalAssets.forEach(a=>{
@@ -724,19 +728,16 @@ function renderYearChart(){
     yearChartInstance.destroy();
   }
 
-  yearChartInstance = new Chart(
-    document.getElementById("yearChart"),
-    {
-      type:"bar",
-      data:{
-        labels:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
-        datasets:[{
-          label:"Maintenance Count",
-          data:monthlyCount
-        }]
-      }
+  yearChartInstance = new Chart(canvas, {
+    type:"bar",
+    data:{
+      labels:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+      datasets:[{
+        label:"Maintenance Count",
+        data:monthlyCount
+      }]
     }
-  );
+  });
 }
 
 /* ===============================
@@ -1496,6 +1497,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
