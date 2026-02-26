@@ -379,20 +379,27 @@ window.addEventListener('DOMContentLoaded',()=>{
 
   const session = JSON.parse(localStorage.getItem(SESSION_KEY));
 
+  const login = document.getElementById('loginPage');
+  const home  = document.getElementById('homePage');
+
   if(session){
     currentRole = session.role;
-    document.getElementById('loginPage').style.display='none';
-    document.getElementById('homePage').style.display='block';
+
+    if(login) login.style.display='none';
+    if(home)  home.style.display='block';
+
     setRole(currentRole);
+
   }else{
-    document.getElementById('loginPage').style.display='flex';
+    if(login) login.style.display='flex';
   }
 
-const excelInput = document.getElementById('excelFile');
-if(excelInput){
-  excelInput.addEventListener('change', handleImport);
-}
-})
+  const excelInput = document.getElementById('excelFile');
+  if(excelInput){
+    excelInput.addEventListener('change', handleImport);
+  }
+
+});
 
 /* ===============================
    MODULE CONTROLLER (UNIFIED)
@@ -1454,6 +1461,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
