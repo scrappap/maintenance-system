@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Asset Detail BY JKB</title>
+<link rel="icon" type="image/png" href="img/JKB logo.png">
+
+<style>
+body{
+  background:#0b1118;
+  color:#cfefff;
+  font-family:'Segoe UI',Arial,sans-serif;
+  padding:25px;
+}
+
+.card{
+  background:#121c26;
+  border:1px solid #00e5ff33;
+  border-radius:14px;
+  padding:20px;
+  margin-top:20px;
+}
+
+.btn{
+  border:1px solid #00e5ff55;
+  background:#111a24;
+  color:#00e5ff;
+  padding:6px 12px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.label{
+  color:#ffaa00;
+  font-size:12px;
+}
+
+.value{
+  margin-bottom:12px;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.form-group{
+  display:flex;
+  flex-direction:column;
+}
+
+.form-group input{
+  background:#0f1822;
+  border:1px solid #00e5ff33;
+  color:#00e5ff;
+  padding:6px;
+  border-radius:6px;
+}
+</style>
+</head>
+<body>
+
+<h2>Asset Detail</h2>
+
+<button class="btn" onclick="goBack()">Back</button>
+
+<div id="detailBox" class="card">
+  Loading...
+</div>
+
+<div style="margin-top:15px">
+  <button class="btn" id="editBtn" onclick="enableEdit()">Edit</button>
+  <button class="btn" id="saveBtn" onclick="saveDetail()" style="display:none">
+    Save
+  </button>
+</div>
+
+<script>
+
+const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbw6pKlFoXafnSGlplNh6K7IRpgzewIkQ-MvbT-sJ_cj_kvkvYMQyAsMfcWgFrL6voLzNQ/exec";
+const SESSION_KEY='pm_user_session';
+
+
+  
+// Protect page
+const session = JSON.parse(localStorage.getItem(SESSION_KEY));
+if(!session){
+  window.location.href="maintenance-system.html";
+}
+
+const assetNo = new URLSearchParams(window.location.search).get("asset") || "";
+
+if(assetNo === ""){
+  document.getElementById("detailBox").innerHTML =
+    "<b style='color:red'>Asset No missing from URL</b>";
+  throw new Error("AssetNo kosong");
+}
+
+
+// 🔥 CALL DETAIL READ
+let currentAsset = null;
+
+document.getElementById("detailBox").innerHTML = "Loading...";
+console.time("detailLoad");
+
+
+  
+fetch(SHEET_API_URL + "?action=detailRead&assetNo=" + encodeURIComponent(assetNo))
+.then(res=>res.json())
+.then(asset=>{console.timeEnd("detailLoad");
+
+  currentAsset = asset;
+
+document.getElementById("detailBox").innerHTML = `
+
+<div class="form-group">
+  <span class="label">Asset No</span>
+  <input id="assetNo" value="${asset.assetNo || ""}" readonly>
+</div>
+
+<div class="form-grid">
+
+  ${inputField("Bumi","bumi",asset.bumi)}
+  ${inputField("Vendor","vendor",asset.vendor)}
+
+  ${inputField("Contact Bumi","contactBumi",asset.contactBumi)}
+  ${inputField("Contact Vendor","contactVendor",asset.contactVendor)}
+
+  ${inputField("Manufacturer","manufacturer",asset.manufacturer)}
+  ${inputField("Brand","brand",asset.brand)}
+
+  ${inputField("Model","model",asset.model)}
+  ${inputField("Serial Number","serialNumber",asset.serialNumber)}
+
+  ${inputField("Price","price",asset.price)}
+  ${inputField("LO No","loNo",asset.loNo)}
+
+  ${inputField("Category","category",asset.category)}
+  ${inputField("Start Date","startDate",asset.startDate)}
+
+  ${inputField("End Date","endDate",asset.endDate)}
+
+</div>
+`;
+  
+})
+.catch(err=>{
+  document.getElementById("detailBox").innerHTML="Connection error";
+  console.error(err);
+});
+
+function inputField(label,id,value){
+  return `
+    <div class="form-group">
+      <span class="label">${label}</span>
+      <input id="${id}" value="${value || ""}" readonly>
+    </div>
+  `;
+}
+
+function saveDetail(){
+
+  const data = {
+    action:"detailUpdate",
+    assetNo: document.getElementById("assetNo").value,
+    bumi: document.getElementById("bumi").value,
+    contactBumi: document.getElementById("contactBumi").value,
+    vendor: document.getElementById("vendor").value,
+    contactVendor: document.getElementById("contactVendor").value,
+    manufacturer: document.getElementById("manufacturer").value,
+    brand: document.getElementById("brand").value,
+    model: document.getElementById("model").value,
+    serialNumber: document.getElementById("serialNumber").value,
+    price: document.getElementById("price").value,
+    loNo: document.getElementById("loNo").value,
+    category: document.getElementById("category").value,
+    startDate: document.getElementById("startDate").value,
+    endDate: document.getElementById("endDate").value
+  };
+
+  fetch(SHEET_API_URL,{
+    method:"POST",
+    body:new URLSearchParams(data)
+  })
+  .then(res=>res.json())
+  .then(()=>{
+
+    alert("Detail Updated Successfully");
+
+    // Lock semula
+    document.querySelectorAll("#detailBox input")
+      .forEach(input=>{
+        input.setAttribute("readonly",true);
+      });
+
+    document.getElementById("editBtn").style.display="inline-block";
+    document.getElementById("saveBtn").style.display="none";
+  });
+}
+
+  function enableEdit(){
+
+  document.querySelectorAll("#detailBox input")
+    .forEach(input=>{
+      if(input.id !== "assetNo"){ // lock assetNo
+        input.removeAttribute("readonly");
+      }
+    });
+
+  document.getElementById("editBtn").style.display="none";
+  document.getElementById("saveBtn").style.display="inline-block";
+}
+  
+function goBack(){
+
+  if(window.history.length > 1){
+    window.history.back();
+  } else {
+    window.location.href = "index.html?open=system";
+  }
+
+}
+  
+</script>
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
