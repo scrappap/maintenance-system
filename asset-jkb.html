@@ -26,7 +26,13 @@ th{background:#081018;color:#00e5ff}
     color:#ff3b3b;
     font-weight:bold;
 }
-
+.header{
+  background:#0f1822;
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  border:2px solid red;
+}
 .status-due{
     background:#3b2a00;
     color:#ffaa00;
@@ -148,15 +154,22 @@ th{background:#081018;color:#00e5ff}
 <body>
 
 <div class="header">
-<div>Asset by JKB</div>
-<button class="btn" onclick="loadData()"><span>Refresh</span></button>
+  <div>Asset by JKB</div>
+
+  <div>
+    <button class="btn" onclick="loadData()">
+      <span>Refresh</span>
+    </button>
+
+    <button class="btn" onclick="summaryasset()">
+      <span>Summary Asset</span>
+    </button>
+
+    <button class="btn" onclick="goBack()">
+      <span>Back</span>
+    </button>
+  </div>
 </div>
-<button class="btn" onclick="summaryasset()"><span>
-Summary Asset
-</span></button>
-<button class="btn" onclick="goBack()">
-  <span>Back</span>
-</button>
     
 <div class="kpiWrap">
 <div class="kpi"><h4>Warranty Active</h4><div id="kpiActive">0</div></div>
@@ -488,6 +501,7 @@ function summaryasset(){
 </body>
 
 </html>
+
 
 
 
