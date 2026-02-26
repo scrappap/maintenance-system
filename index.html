@@ -1390,18 +1390,17 @@ function login(){
 function logout(){
 
   localStorage.removeItem(SESSION_KEY);
+  currentRole = 'admin';
 
-  currentRole='admin';
+  const main  = document.getElementById('mainSystem');
+  const home  = document.getElementById('homePage');
+  const login = document.getElementById('loginPage');
+  const jkb   = document.getElementById('jkbSystem');
 
-  document.getElementById('mainSystem').style.display='none';
-  document.getElementById('homePage').style.display='none';
-  document.getElementById('loginPage').style.display='flex';
-
-if(main) main.style.display='none';
-if(home) home.style.display='none';
-if(login) login.style.display='flex';
-location.reload();
-
+  if(main)  main.style.display = 'none';
+  if(home)  home.style.display = 'none';
+  if(jkb)   jkb.style.display  = 'none';
+  if(login) login.style.display = 'flex';
 }
 
 function setRole(role){
@@ -1455,6 +1454,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
