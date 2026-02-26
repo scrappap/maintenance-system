@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>JKB Warranty Enterprise</title>
+<title>JKB Warranty</title>
 <link rel="icon" type="image/png" href="img/JKB logo.png">
 
 
@@ -151,7 +151,9 @@ th{background:#081018;color:#00e5ff}
 <div>Asset by JKB</div>
 <button class="btn" onclick="loadData()"><span>Refresh</span></button>
 </div>
-
+<button class="btn" onclick="summaryasset()"><span>
+Summary Asset
+</span></button>
 <button class="btn" onclick="goBack()">
   <span>Back</span>
 </button>
@@ -458,7 +460,9 @@ function renderVendorChart(){
     );
 }
 
-
+function summaryasset{
+  window.location.href = "asset-detail-jkb.html?asset=" + assetNo;
+}
 
     function goBack(){
 
@@ -474,6 +478,7 @@ function renderVendorChart(){
 </body>
 
 </html>
+
 
 
 
