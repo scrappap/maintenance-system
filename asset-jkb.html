@@ -128,6 +128,21 @@ th{background:#081018;color:#00e5ff}
         #ff3b3b
     );
 }
+.status-done{
+    background:#002f1f;
+    color:#00ffaa;
+}
+
+.status-due{
+    background:#3b2a00;
+    color:#ffaa00;
+}
+
+.status-overdue{
+    background:#3b0000;
+    color:#ff3b3b;
+    animation: blink 1s infinite;
+}
 </style>
 </head>
 <body>
@@ -156,7 +171,10 @@ Export 30 Days Reminder
 <h3 style="color:#ffaa00">Vendor Performance</h3>
 <canvas id="vendorChart" height="100"></canvas>
 </div>
-
+<select id="vendorFilter" onchange="filterVendor()"
+        style="margin:10px 20px;background:#0f1822;color:#00e5ff">
+    <option value="">All Vendor</option>
+</select>
 <div class="card">
 <h3 style="color:#ffaa00">PPM Monitoring</h3>
 <table id="ppmTable">
@@ -206,9 +224,32 @@ assets=data.assets;
 ppm=data.ppm;
 render();
 renderVendorChart();
+populateVendorFilter();
 });
 }
 
+function populateVendorFilter(){
+
+    const vendorSet = new Set(ppm.map(p=>p.vendor));
+    const select = document.getElementById("vendorFilter");
+
+    select.innerHTML = '<option value="">All Vendor</option>';
+
+    vendorSet.forEach(v=>{
+        select.innerHTML += `<option value="${v}">${v}</option>`;
+    });
+}
+
+function filterVendor(){
+
+    const value = document.getElementById("vendorFilter").value;
+
+    document.querySelectorAll("#ppmTable tbody tr").forEach(row=>{
+        const vendor = row.children[1].innerText;
+        row.style.display = (!value || vendor===value) ? "" : "none";
+    });
+}
+    
 function render(){
 const today=new Date();
 let active=0,expiring=0,due=0,overdue=0;
@@ -249,7 +290,17 @@ const tr=tbody.insertRow();
 tr.insertCell().innerText=p.assetNo;
 tr.insertCell().innerText=p.vendor;
 tr.insertCell().innerText=planned.toLocaleDateString();
-tr.insertCell().innerText=onsite?onsite.toLocaleDateString():"-";
+const onsiteCell = tr.insertCell();
+
+if(onsite){
+    onsiteCell.innerText = onsite.toLocaleDateString();
+}else{
+    onsiteCell.innerHTML = `
+        <input type="date" 
+               style="background:#0f1822;color:#00e5ff;border:1px solid #00e5ff33"
+               onchange="updateOnsite('${p.ppmId}',this.value)">
+    `;
+}
 tr.insertCell().innerText=status;
 
 if(status==="Overdue") tr.className="status-overdue";
@@ -266,6 +317,24 @@ document.getElementById("kpiOverdue").innerText=overdue;
 loadData();
 setInterval(loadData,30000);
 
+function updateOnsite(ppmId, dateValue){
+
+    if(!dateValue) return;
+
+    fetch(API_URL, {
+        method:"POST",
+        body:new URLSearchParams({
+            action:"updateOnsite",
+            ppmId:ppmId,
+            onsiteDate:dateValue
+        })
+    })
+    .then(res=>res.text())
+    .then(()=>{
+        loadData(); // refresh table
+    });
+}
+    
 function getPPMStatus(plannedDate, onsiteDate){
     const today = new Date();
     const planned = new Date(plannedDate);
@@ -404,6 +473,7 @@ function renderVendorChart(){
 </body>
 
 </html>
+
 
 
 
