@@ -463,8 +463,11 @@ function openSystem(){
 }
 
 function openJKBSystem(){
-    hideAllModules();
-    document.getElementById('jkbSystem').style.display='block';
+  if(window.history.length > 1){
+    window.history.back();
+  } else {
+    window.location.href = "index.html?open=system";
+  }
 }
 
 /*===============================
@@ -1496,6 +1499,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
