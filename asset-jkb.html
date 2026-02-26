@@ -210,7 +210,7 @@ Export 30 Days Reminder
 <tbody></tbody>
 </table>
 </div>
-<!--
+
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -238,14 +238,18 @@ let vendorChartInstance = null;
 
 function loadData(){
 fetch(API_URL+"?action=getAll")
-.then(res=>res.json())
-.then(data=>{
-    console.log("DATA RETURN:", data);
-assets=data.assets;
-ppm=data.ppm;
-render();
-renderVendorChart();
-populateVendorFilter();
+.then(res=>res.text())
+.then(text=>{
+    try{
+        const data = JSON.parse(text);
+        assets=data.assets||[];
+        ppm=data.ppm||[];
+        render();
+        renderVendorChart();
+        populateVendorFilter();
+    }catch(e){
+        console.error("API RETURN NOT JSON:", text);
+    }
 });
 }
 
@@ -503,10 +507,11 @@ function summaryasset(){
   }
 }    
 </script>
--->
+
 </body>
 
 </html>
+
 
 
 
