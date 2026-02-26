@@ -216,68 +216,6 @@ input,select{background:#0f1822;border:1px solid #00e5ff33;color:#00e5ff;border-
 
 </div>
 
-  <!-- ================= JKB SYSTEM ================= -->
-  <div id="jkbSystem" style="display:none;margin-top:20px">
-
-    <div class="headerBar">
-      <button class="btn btn-amber" onclick="openDashboard()">Dashboard</button>
-      <div>
-        <button class="btn btn-gray" id="roleBtnJKB">Role: admin</button>
-        <button class="btn btn-danger" onclick="logout()">Logout</button>
-      </div>
-      <div>
-        <div class="title">Warranty Monitoring</div>
-        <div class="subtle">Asset by JKB</div>
-      </div>
-    </div>
-
-    <div class="kpiWrap">
-      <div class="kpi">
-        <h4>Warranty Active</h4>
-        <div id="jkbActive">0</div>
-      </div>
-      <div class="kpi">
-        <h4>Expiring &lt; 90 Days</h4>
-        <div id="jkbExpiring">0</div>
-      </div>
-      <div class="kpi">
-        <h4>PPM Due 30 Days</h4>
-        <div id="jkbDue">0</div>
-      </div>
-      <div class="kpi">
-        <h4>PPM Overdue</h4>
-        <div id="jkbOverdue">0</div>
-      </div>
-    </div>
-
-    <div class="card" style="padding:12px;margin-bottom:12px">
-      <button class="btn btn-green" onclick="exportVendorReminder()">
-        Export 30 Days Reminder
-      </button>
-    </div>
-
-    <div class="card" style="max-height:420px;overflow:auto">
-      <table id="jkbPPMTable">
-        <thead>
-          <tr>
-            <th>ASSET NO</th>
-            <th>VENDOR</th>
-            <th>PLANNED DATE</th>
-            <th>ONSITE DATE</th>
-            <th>STATUS</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-
-    <div class="card" style="padding:15px;margin-top:15px">
-      <canvas id="vendorChart" height="90"></canvas>
-    </div>
-
-  </div>
-
-
 <div class="toast" id="toast"></div>
   
 <!-- IMPORT PREVIEW MODAL -->
@@ -1495,6 +1433,7 @@ function showToast(message){
 
 </body>
 </html>
+
 
 
 
