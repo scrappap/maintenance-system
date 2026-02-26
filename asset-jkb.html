@@ -436,9 +436,12 @@ function renderVendorChart(){
 
     for(const v in stats){
         labels.push(v);
-         const percent = stats[v].total > 0
+
+        const percent = stats[v].total > 0
            ? (stats[v].ontime / stats[v].total) * 100
            : 0;
+
+        performance.push(percent.toFixed(1));
     }
 
     if(vendorChartInstance){
@@ -455,13 +458,22 @@ function renderVendorChart(){
                     label:"Performance %",
                     data:performance
                 }]
+            },
+            options:{
+                responsive:true,
+                scales:{
+                    y:{
+                        beginAtZero:true,
+                        max:100
+                    }
+                }
             }
         }
     );
 }
 
-function summaryasset{
-  window.location.href = "asset-detail-jkb.html?asset=" + assetNo;
+function summaryasset(){
+  window.location.href = "asset-detail-jkb.html?asset=";
 }
 
     function goBack(){
@@ -473,11 +485,10 @@ function summaryasset{
   }
 }    
 </script>
-    
-</script>
 </body>
 
 </html>
+
 
 
 
