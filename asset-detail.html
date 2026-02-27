@@ -57,6 +57,40 @@ body{
   padding:6px;
   border-radius:6px;
 }
+/* Loading overlay */
+.loading-overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.6);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  display:none;
+}
+
+.spinner{
+  width:50px;
+  height:50px;
+  border:5px solid #00e5ff33;
+  border-top:5px solid #00e5ff;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+  0%{transform:rotate(0deg);}
+  100%{transform:rotate(360deg);}
+}
+
+/* Disabled Save Button */
+.btn:disabled{
+  opacity:0.5;
+  cursor:not-allowed;
+}
 </style>
 </head>
 <body>
@@ -75,7 +109,10 @@ body{
     Save
   </button>
 </div>
-
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+</div>
+  
 <script>
 
 const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwAJl-cEwnDnQpeSQAruRe4eeaH-BO9PTfTW2q-JZ5sXIF7p2m0usnj2IPoBdktdf7B4A/exec";
@@ -104,11 +141,12 @@ let currentAsset = null;
 document.getElementById("detailBox").innerHTML = "Loading...";
 console.time("detailLoad");
 
-
+showLoading();
   
 fetch(SHEET_API_URL + "?action=detailRead&assetNo=" + encodeURIComponent(assetNo))
 .then(res=>res.json())
-.then(asset=>{console.timeEnd("detailLoad");
+.then(asset=>{
+  hideLoading();
 
   currentAsset = asset;
 
@@ -161,6 +199,12 @@ function inputField(label,id,value){
 
 function saveDetail(){
 
+  const saveBtn = document.getElementById("saveBtn");
+
+  // Disable button + show loading
+  saveBtn.disabled = true;
+  showLoading();
+
   const data = {
     action:"detailUpdate",
     assetNo: document.getElementById("assetNo").value,
@@ -188,7 +232,6 @@ function saveDetail(){
 
     alert("Detail Updated Successfully");
 
-    // Lock semula
     document.querySelectorAll("#detailBox input")
       .forEach(input=>{
         input.setAttribute("readonly",true);
@@ -196,6 +239,14 @@ function saveDetail(){
 
     document.getElementById("editBtn").style.display="inline-block";
     document.getElementById("saveBtn").style.display="none";
+
+  })
+  .catch(()=>{
+    alert("Update failed");
+  })
+  .finally(()=>{
+    hideLoading();
+    saveBtn.disabled = false;
   });
 }
 
@@ -221,12 +272,20 @@ function goBack(){
   }
 
 }
-  
+
+  function showLoading(){
+  document.getElementById("loadingOverlay").style.display = "flex";
+}
+
+function hideLoading(){
+  document.getElementById("loadingOverlay").style.display = "none";
+}
 </script>
 
 </body>
 
 </html>
+
 
 
 
